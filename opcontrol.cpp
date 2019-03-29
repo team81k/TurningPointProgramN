@@ -2,8 +2,6 @@
 #include "globals.hpp"
 #include "pid.hpp"
 
-lv_obj_t * label = lv_label_create(lv_scr_act(), NULL);
-
 bool arcadeDrive = false;
 
 void opcontrol()
@@ -30,8 +28,8 @@ void opcontrol()
 		double differentialPower = differentialPID.calculate(differentialPot.get_value());
 
 		double FRP = rightSide.calculate() + differentialPower;
-		double BRP = rightSide.getPower() + differentialPower;
-		double FLP = leftSide.calculate() - differentialPower;
+		double BRP = rightSide.getPower() - differentialPower;
+		double FLP = leftSide.calculate() + differentialPower;
 		double BLP = leftSide.getPower() - differentialPower;
 
 		if(FRP > 127) { BRP -= FRP - 127; FRP = 127; }
@@ -77,7 +75,7 @@ void opcontrol()
 			, differentialPot.get_value()
 			, robotX, robotY
 			, robotDir * 180.0 / PI);
-		lv_label_set_text(label, buffer);
+		//lv_label_set_text(label, buffer);
 
 		pros::delay(3);
 	}
