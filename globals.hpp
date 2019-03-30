@@ -8,6 +8,9 @@ extern pros::Controller master;
 extern pros::Controller partner;
 extern pros::Motor FR, FL, BR, BL;
 
+extern double DIFFERENTIAL_UP;
+extern double DIFFERENTIAL_DOWN;
+
 extern pros::ADIPotentiometer differentialPot;
 
 extern double wheelWidth;

@@ -7,6 +7,9 @@ pros::Controller master(pros::E_CONTROLLER_MASTER);
 pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 pros::Motor FR(1), FL(2, true), BR(3), BL(4, true);
 
+double DIFFERENTIAL_UP = 4095;
+double DIFFERENTIAL_DOWN = 10;
+
 pros::ADIPotentiometer differentialPot('a');
 
 double wheelWidth = (13.6_in + 10.5_in) / 2.0; //inches
@@ -21,7 +24,7 @@ double ticksPerRevolution = 900;
 
 pid rightSide(0, 0, 0, -127, 127, 0);
 pid leftSide(0, 0, 0, -127, 127, 0);
-pid differentialPID(0.15, 0, 0.012, -127, 127, 127 * 3);
+pid differentialPID(0.15, 0, 0.012, -90, 90, 127 * 3);
 
 pid forwardDrivePID(0.12, 0, 0.05, -127, 127, 127 * 3);
 pid turnDrivePID(0.3, 0.001, 0.02, -127, 127, 127 * 3);
