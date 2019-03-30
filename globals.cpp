@@ -33,11 +33,54 @@ double robotX = 0; //in inches
 double robotY = 0;
 double robotDir = 0; //radians
 
+//0 = none
+//1 = sides
+//2 = skills
+int autonType = 0;
+
+bool autonRed = true;
+bool autonNear = true;
+bool autonPlatform = true;
+
 lv_style_t screenStyle = lv_style_scr;
 
-lv_obj_t * homePage = lv_page_create(lv_scr_act(), NULL);
-lv_obj_t * textObject = lv_label_create(homePage, NULL);
+lv_obj_t * homePage;
+lv_obj_t * homeTitlePage, * homeTitleText, * homeTitleAuton;
+lv_obj_t * homeTextPage, * homeTextObject;
 
-lv_obj_t * autonomousPage = lv_page_create(lv_scr_act(), NULL);
+lv_obj_t * autonomousPage;
+lv_obj_t * autonTitlePage, * autonTitleHome, * autonTitleText, * autonTitleRun;
+lv_obj_t * autonTypePage, * autonNone, * autonSides, * autonSkills;
+lv_obj_t * autonNonePage;
+lv_obj_t * autonSidesPage, * autonSideColor, * autonSideDistance, * autonSidePlatform;
+lv_obj_t * autonSideDescription;
+lv_obj_t * autonSkillsPage;
 
-lv_obj_t * autonomousRunPage = lv_page_create(lv_scr_act(), NULL);
+lv_obj_t * autonomousRunPage;
+lv_obj_t * autonRunTitlePage, * autonRunTitleHome, * autonRunTitleText, * autonRunTitleBack;
+
+void setAutonomousNav(bool nav)
+{
+    lv_obj_set_hidden(autonTitleHome, !nav);
+    lv_obj_set_hidden(autonTitleRun, !nav);
+}
+
+void setPage(int page)
+{
+    lv_obj_set_hidden(homePage, page != 0);
+    lv_obj_set_hidden(autonomousPage, page != 1);
+    lv_obj_set_hidden(autonomousRunPage, page != 2);
+}
+
+const char * generateSidesDescription()
+{
+    std::string description = "The robot will ";
+	if(autonRed) description += "Red, ";
+    else description += "Blue, ";
+    if(autonNear) description += "Near, ";
+    else description += "Far, ";
+    if(autonPlatform) description += "Platform: Yes";
+    else description += "Platform: No";
+    description += ". And stuff.";
+    return description.c_str();
+}

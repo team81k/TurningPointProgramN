@@ -6,6 +6,9 @@ bool arcadeDrive = false;
 
 void opcontrol()
 {
+	setAutonomousNav(true);
+	setPage(0);
+
 	while(true)
 	{
 		//Drive
@@ -63,8 +66,8 @@ void opcontrol()
 		}*/
 
 		//Transform
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) differentialPID.target = 4095;
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) differentialPID.target = 10;
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) differentialPID.target = DIFFERENTIAL_UP;
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) differentialPID.target = DIFFERENTIAL_DOWN;
 
 		//Display values
 		char buffer[250];
@@ -75,7 +78,7 @@ void opcontrol()
 			, differentialPot.get_value()
 			, robotX, robotY
 			, robotDir * 180.0 / PI);
-		//lv_label_set_text(label, buffer);
+		lv_label_set_text(homeTextObject, buffer);
 
 		pros::delay(3);
 	}
