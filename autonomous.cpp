@@ -9,47 +9,52 @@ bool autonPIDReady = false;
 
 void autonomousAsync(void * param)
 {
-    double rightPower = 0;
-    double leftPower = 0;
-
-    if(driveType == 1)
+    while(true)
     {
-        double avgDistance = (FR.get_position() + BR.get_position() + FL.get_position() + BL.get_position()) / 4;
+        double rightPower = 0;
+        double leftPower = 0;
 
-        rightPower = forwardDrivePID.calculate(avgDistance);
-        leftPower = forwardDrivePID.getPower();
+        if(driveType == 1)
+        {
+            double avgDistance = (FR.get_position() + BR.get_position() + FL.get_position() + BL.get_position()) / 4;
+
+            rightPower = forwardDrivePID.calculate(avgDistance);
+            leftPower = forwardDrivePID.getPower();
+        }
+        else if(driveType == 2)
+        {
+            double avgDistance = (FR.get_position() + BR.get_position() - FL.get_position() - BL.get_position()) / 4;
+
+            rightPower = turnDrivePID.calculate(avgDistance);
+            leftPower = -turnDrivePID.getPower();
+        }
+
+        double differentialPower = differentialPID.calculate(differentialPot.get_value());
+
+        double FRP = rightPower + differentialPower;
+        double BRP = rightPower - differentialPower;
+        double FLP = leftPower + differentialPower;
+        double BLP = leftPower - differentialPower;
+
+        if(FRP > 127) { BRP -= FRP - 127; FRP = 127; }
+        if(BRP > 127) { FRP -= BRP - 127; BRP = 127; }
+        if(FRP < -127) { BRP -= FRP + 127; FRP = -127; }
+        if(BRP < -127) { FRP -= BRP + 127; BRP = -127; }
+
+        if(FLP > 127) { BLP -= FLP - 127; FLP = 127; }
+        if(BLP > 127) { FLP -= BLP - 127; BLP = 127; }
+        if(FLP < -127) { BLP -= FLP + 127; FLP = -127; }
+        if(BLP < -127) { FLP -= BLP + 127; BLP = -127; }
+
+        FR.move(FRP);
+        BR.move(BRP);
+        FL.move(FLP);
+        BL.move(BLP);
+
+        autonPIDReady = true;
+
+        pros::delay(3);
     }
-    else if(driveType == 2)
-    {
-        double avgDistance = (FR.get_position() + BR.get_position() - FL.get_position() - BL.get_position()) / 4;
-
-        rightPower = turnDrivePID.calculate(avgDistance);
-        leftPower = -turnDrivePID.getPower();
-    }
-
-    double differentialPower = differentialPID.calculate(differentialPot.get_value());
-
-    double FRP = rightPower + differentialPower;
-    double BRP = rightPower - differentialPower;
-    double FLP = leftPower + differentialPower;
-    double BLP = leftPower - differentialPower;
-
-    if(FRP > 127) { BRP -= FRP - 127; FRP = 127; }
-    if(BRP > 127) { FRP -= BRP - 127; BRP = 127; }
-    if(FRP < -127) { BRP -= FRP + 127; FRP = -127; }
-    if(BRP < -127) { FRP -= BRP + 127; BRP = -127; }
-
-    if(FLP > 127) { BLP -= FLP - 127; FLP = 127; }
-    if(BLP > 127) { FLP -= BLP - 127; BLP = 127; }
-    if(FLP < -127) { BLP -= FLP + 127; FLP = -127; }
-    if(BLP < -127) { FLP -= BLP + 127; BLP = -127; }
-
-    FR.move(FRP);
-    BR.move(BRP);
-    FL.move(FLP);
-    BL.move(BLP);
-
-    autonPIDReady = true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,7 +125,7 @@ void autonomous()
 	setPage(0);
     lv_label_set_text(homeTextObject, "");
 
-    pros::task_t autonomousAsyncTask = pros::c::task_create(autonomousAsync, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "autonomousAsync");
+    autonomousAsyncTask = pros::c::task_create(autonomousAsync, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "autonomousAsync");
 
     for(int i = 0; i < 8; i++)
     {

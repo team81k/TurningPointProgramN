@@ -92,7 +92,6 @@ void opcontrol()
 		else
 		{
 			flywheel.move(flywheelPower);
-			//flywheel.move_velocity(flywheelSpeed * 6);
 		}
 
 		//Display values
@@ -100,15 +99,11 @@ void opcontrol()
 			"pot: %i\n"
 			"robot: (%f, %f)\n"
 			"angle: %fdeg\n"
-			"flywheelPower: %f\n"
-			"speed: %f\n"
-			"flywheelSpeed: %f"
+			"current: %i"
 			, differentialPot.get_value()
 			, robotX, robotY
 			, robotDir * 180.0 / PI
-			, flywheelPower
-			, flywheel.get_actual_velocity() / 6
-			, flywheelSpeed);
+			, flywheel.get_current_draw());
 		lv_label_set_text(homeTextObject, buffer);
 
 		//pages
@@ -161,6 +156,7 @@ void opcontrol()
 			}
 
 			if(pros::c::task_get_state(autonTask) != TASK_STATE_DELETED) pros::c::task_delete(autonTask);
+			if(pros::c::task_get_state(autonomousAsyncTask) != TASK_STATE_DELETED) pros::c::task_delete(autonomousAsyncTask);
 
 			runAutonomous = -1;
 

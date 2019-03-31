@@ -33,6 +33,8 @@ extern double robotX;
 extern double robotY;
 extern double robotDir;
 
+extern pros::task_t autonomousAsyncTask;
+
 extern int autonType;
 
 extern bool autonRed;
