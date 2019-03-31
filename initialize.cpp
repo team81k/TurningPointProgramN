@@ -1,14 +1,21 @@
 #include "main.h"
 #include "globals.hpp"
 
+struct color_t
+{
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+};
+
 void btnSetToggled(lv_obj_t * btn, bool toggled)
 	{ if(toggled != (lv_btn_get_state(btn) >= 2)) lv_btn_toggle(btn); }
 
 lv_res_t btn_click_action(lv_obj_t * btn)
 {
-	if(btn == autonTitleHome || btn == autonRunTitleHome) setPage(0);
-	if(btn == homeTitleAuton || btn == autonRunTitleBack) setPage(1);
-	if(btn == autonTitleRun) setPage(2);
+	if(btn == autonomousPage[1] || btn == autonomousRunPage[1]) setPage(0);
+	if(btn == homePage[2] || btn == autonomousRunPage[2]) setPage(1);
+	if(btn == autonomousPage[2]) setPage(2);
 
 	if(btn == autonNone || btn == autonSides || btn == autonSkills)
 	{
@@ -30,9 +37,9 @@ lv_res_t btn_click_action(lv_obj_t * btn)
 		lv_obj_t * label = lv_obj_get_child(autonSideColor, NULL);
 		autonRed = true;
 		char * newTitle = (char*)"Red";
-		lv_color_t newColor = {0, 0, 200};
+		lv_color_t newColor = LV_COLOR_MAKE(200, 0, 0);
 		if(strcmp(lv_label_get_text(label), "Red") == 0)
-			{ newTitle = (char*)"Blue";newColor = {200, 0, 0}; autonRed = false; }
+			{ newTitle = (char*)"Blue";newColor = LV_COLOR_MAKE(0, 0, 200); autonRed = false; }
 		lv_label_set_text(label, newTitle);
 		for(int i = 0; i < 4; i++)
 		{
@@ -70,15 +77,11 @@ lv_res_t btn_click_action(lv_obj_t * btn)
 		lv_label_set_text(autonSideDescription, generateSidesDescription());
 	}
 
-	return LV_RES_OK;
-}
+	if(btn == autonRunNormal) runAutonomous = 0;
+	if(btn == autonRunSkills) runAutonomous = 1;
+	if(btn == autonRunUnlimited) runAutonomous = 2;
 
-void setFullscreenPage(lv_obj_t * a)
-{
-	lv_obj_set_hidden(a, true);
-	lv_obj_set_size(a, LV_HOR_RES, LV_VER_RES);
-	lv_obj_set_style(a, &lv_style_transp_tight);
-	lv_obj_set_pos(a, 0, 0);
+	return LV_RES_OK;
 }
 
 lv_obj_t * createLabel(lv_obj_t * parent, const char * text,
@@ -93,10 +96,11 @@ lv_obj_t * createLabel(lv_obj_t * parent, const char * text,
 	if(x != INT16_MAX && y != INT16_MAX) lv_obj_align(label, NULL, align, x ,y);
 	if(width != INT16_MAX) lv_obj_set_width(label, width);
 	if(height != INT16_MAX) lv_obj_set_height(label, height);
+	lv_page_glue_obj(label, true);
 	return label;
 }
 
-lv_obj_t * createButton(lv_obj_t * parent, const char * title, lv_color_t color, lv_color_t grad_color,
+lv_obj_t * createButton(lv_obj_t * parent, const char * title, color_t color, color_t grad_color,
 	lv_coord_t w, lv_coord_t h, lv_coord_t x, lv_coord_t y, lv_align_t align = LV_ALIGN_IN_TOP_LEFT)
 {
 	lv_style_t * style[4];
@@ -107,19 +111,19 @@ lv_obj_t * createButton(lv_obj_t * parent, const char * title, lv_color_t color,
 		style[i]->text.color = LV_COLOR_WHITE;
 		if(i % 2 == 0)
 		{
-			style[i]->body.main_color = color;
-			style[i]->body.grad_color = grad_color;
+			style[i]->body.main_color = LV_COLOR_MAKE(color.r, color.g, color.b);
+			style[i]->body.grad_color = LV_COLOR_MAKE(grad_color.r, grad_color.g, grad_color.b);
 		}
 		else
 		{
 			style[i]->body.main_color = {
-				(uint8_t)std::fmin(color.blue + 50, 255),
-				(uint8_t)std::fmin(color.green + 50, 255),
-				(uint8_t)std::fmin(color.red + 50, 255)};
+				(uint8_t)std::fmin(color.b + 50, 255),
+				(uint8_t)std::fmin(color.g + 50, 255),
+				(uint8_t)std::fmin(color.r + 50, 255)};
 			style[i]->body.grad_color = {
-				(uint8_t)std::fmin(grad_color.blue + 50, 255),
-				(uint8_t)std::fmin(grad_color.green + 50, 255),
-				(uint8_t)std::fmin(grad_color.red + 50, 255)};
+				(uint8_t)std::fmin(grad_color.b + 50, 255),
+				(uint8_t)std::fmin(grad_color.g + 50, 255),
+				(uint8_t)std::fmin(grad_color.r + 50, 255)};
 		}
 	}
 	style[2]->body.border.color = style[3]->body.border.color = LV_COLOR_WHITE;
@@ -130,10 +134,12 @@ lv_obj_t * createButton(lv_obj_t * parent, const char * title, lv_color_t color,
 	lv_obj_set_size(button, w, h);
 	lv_obj_align(button, NULL, align, x, y);
 	createLabel(button, title);
+	lv_btn_set_action(button, LV_BTN_ACTION_CLICK, btn_click_action);
+	lv_page_glue_obj(button, true);
 	return button;
 }
 
-lv_obj_t * createButton(lv_obj_t * parent, const char * title, lv_color_t color,
+lv_obj_t * createButton(lv_obj_t * parent, const char * title, color_t color,
 	lv_coord_t w, lv_coord_t h, lv_coord_t x, lv_coord_t y, lv_align_t align = LV_ALIGN_IN_TOP_LEFT)
 {
 	return createButton(parent, title, color, color, w, h, x, y, align);
@@ -150,6 +156,17 @@ lv_obj_t * createPage(lv_obj_t * parent, lv_coord_t width, lv_coord_t height, lv
 	return page;
 }
 
+lv_obj_t * * createPage(lv_obj_t * parent, const char * lButton, const char * title, const char * rButton, lv_coord_t lButtonWidth, lv_coord_t rButtonWidth)
+{
+	lv_obj_t * * page = (lv_obj_t* *)malloc(sizeof(lv_obj_t) * 3);
+	page[0] = createPage(parent, LV_HOR_RES, LV_VER_RES, 0, 0, false);
+	lv_obj_t * titleBar = createPage(page[0], LV_HOR_RES, 40, 0, 0);
+	page[1] = createButton(titleBar, lButton, {100, 100, 100}, lButtonWidth, 40, 0, 0);
+	createLabel(titleBar, title, 0, 0, LV_ALIGN_CENTER);
+	page[2] = createButton(titleBar, rButton, {100, 100, 100}, rButtonWidth, 40, 0, 0, LV_ALIGN_IN_RIGHT_MID);
+	return page;
+}
+
 void initialize()
 {
 	differentialPID.target = 4095;
@@ -160,124 +177,72 @@ void initialize()
     screenStyle.text.color = LV_COLOR_MAKE(255, 255, 255);
     lv_obj_set_style(lv_scr_act(), &screenStyle);
 
-	homePage = lv_page_create(lv_scr_act(), NULL);
-	autonomousPage = lv_page_create(lv_scr_act(), NULL);
-	autonomousRunPage = lv_page_create(lv_scr_act(), NULL);
-
-	setFullscreenPage(homePage);
-	setFullscreenPage(autonomousPage);
-	setFullscreenPage(autonomousRunPage);
+	homePage = createPage(lv_scr_act(), "PIDTuner", "Home", "Autonomous", 150, 150);
+	autonomousPage = createPage(lv_scr_act(), SYMBOL_HOME, "Autonomous", "Run", 100, 100);
+	autonomousRunPage = createPage(lv_scr_act(), SYMBOL_HOME, "Autonomous Run", SYMBOL_LEFT" Back", 100, 100);
 
 	setPage(0);
 
 	/*********************************************/
-	/*              Home Title Bar               */
-	/*********************************************/
-	homeTitlePage = lv_page_create(homePage, NULL);
-	lv_obj_set_size(homeTitlePage, LV_HOR_RES, 40);
-	lv_obj_set_style(homeTitlePage, &lv_style_transp_tight);
-
-	createButton(homeTitlePage, "PID Tunner", {100, 100, 100}, 150, 40, 0, 0);
-	homeTitleText = createLabel(homeTitlePage, "Home", 0, 0, LV_ALIGN_CENTER);
-	homeTitleAuton = createButton(homeTitlePage, "Autonomous", {100, 100, 100}, 150, 40, 0, 0, LV_ALIGN_IN_RIGHT_MID);;
-
-	lv_btn_set_action(homeTitleAuton, LV_BTN_ACTION_CLICK, btn_click_action);
-
-	/*********************************************/
 	/*               Home Text View              */
 	/*********************************************/
-	homeTextPage = lv_page_create(homePage, NULL);
-	lv_obj_set_size(homeTextPage, LV_HOR_RES - 10, LV_VER_RES - 50);
-	lv_obj_set_pos(homeTextPage, 5, 45);
-	lv_obj_set_style(homeTextPage, &lv_style_transp_tight);
-
+	homeTextPage = createPage(homePage[0], LV_HOR_RES - 10, LV_VER_RES - 50, 5, 45);
 	homeTextObject = createLabel(homeTextPage, "", 0, 0, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES, INT16_MAX, LV_LABEL_ALIGN_LEFT);
-
-	/*********************************************/
-	/*           Autonomous Title Bar            */
-	/*********************************************/
-	autonTitlePage = lv_page_create(autonomousPage, NULL);
-	lv_obj_set_size(autonTitlePage, LV_HOR_RES, 40);
-	lv_obj_set_style(autonTitlePage, &lv_style_transp_tight);
-
-	autonTitleHome = createButton(autonTitlePage, SYMBOL_HOME, {100, 100, 100}, 100, 40, 0, 0, LV_ALIGN_IN_LEFT_MID);
-	autonTitleText = createLabel(autonTitlePage, "Autonomous", 0, 0, LV_ALIGN_CENTER);
-	autonTitleRun = createButton(autonTitlePage, "Run", {100, 100, 100}, 100, 40, 0, 0, LV_ALIGN_IN_RIGHT_MID);
-
-	lv_btn_set_action(autonTitleHome, LV_BTN_ACTION_CLICK, btn_click_action);
-	lv_btn_set_action(autonTitleRun, LV_BTN_ACTION_CLICK, btn_click_action);
 
 	/*********************************************/
 	/*        Autonomous Type Page Select        */
 	/*********************************************/
-	autonTypePage = createPage(autonomousPage, LV_HOR_RES, 40, 0, 50, true);
+	autonTypePage = createPage(autonomousPage[0], LV_HOR_RES, 40, 0, 50, true);
 
 	lv_page_set_scrl_fit(autonTypePage, true, false);
 	lv_page_set_scrl_height(autonTypePage, 40);
 	lv_page_set_sb_mode(autonTypePage, LV_SB_MODE_OFF);
 
 	autonNone = createButton(autonTypePage, "None", {100, 100, 100}, 100, 40, 0, 0);
-	autonSides = createButton(autonTypePage, "Sides", {0, 0, 200}, {200, 0, 0}, 100, 40, 110, 0);
-	autonSkills = createButton(autonTypePage, "Skills", {0, 150, 0}, 100, 40, 220, 0);
-
-	lv_page_glue_obj(autonNone, true);
-	lv_page_glue_obj(autonSides, true);
-	lv_page_glue_obj(autonSkills, true);
+	autonSides = createButton(autonTypePage, "Sides", {200, 0, 0}, {0, 0, 200}, 100, 40, 110, 0);
+	autonSkills = createButton(autonTypePage, "Skills", {50, 150, 50}, 100, 40, 220, 0);
 
 	btnSetToggled(autonNone, true);
-
-	lv_btn_set_action(autonNone, LV_BTN_ACTION_CLICK, btn_click_action);
-	lv_btn_set_action(autonSides, LV_BTN_ACTION_CLICK, btn_click_action);
-	lv_btn_set_action(autonSkills, LV_BTN_ACTION_CLICK, btn_click_action);
 
 	/*********************************************/
 	/*           Autonomous Type Pages           */
 	/*********************************************/
 
 	//none page
-	autonNonePage = createPage(autonomousPage, LV_HOR_RES, LV_VER_RES - 100, 0, 100, true);
+	autonNonePage = createPage(autonomousPage[0], LV_HOR_RES, LV_VER_RES - 100, 0, 100, true);
 	createLabel(autonNonePage, "The robot will do nothing.", 0, 0, LV_ALIGN_IN_BOTTOM_MID);
 
 	//sides page
-	autonSidesPage = createPage(autonomousPage, LV_HOR_RES, LV_VER_RES - 100, 0, 100, false);
+	autonSidesPage = createPage(autonomousPage[0], LV_HOR_RES, LV_VER_RES - 100, 0, 100, false);
 
-	autonSideColor = createButton(autonSidesPage, "Red", {0, 0, 200}, 100, 40, 0, 0);
+	autonSideColor = createButton(autonSidesPage, "Red", {200, 0, 0}, 100, 40, 0, 0);
 	autonSideDistance = createButton(autonSidesPage, "Near", {100, 100, 100}, 100, 40, 110, 0);
 	autonSidePlatform = createButton(autonSidesPage, "Platform: Yes", {100, 100, 100}, 200, 40, 220, 0);
-
-	lv_btn_set_action(autonSideColor, LV_BTN_ACTION_CLICK, btn_click_action);
-	lv_btn_set_action(autonSideDistance, LV_BTN_ACTION_CLICK, btn_click_action);
-	lv_btn_set_action(autonSidePlatform, LV_BTN_ACTION_CLICK, btn_click_action);
 
 	autonSideDescription = createLabel(autonSidesPage, generateSidesDescription(), 0, 50, LV_ALIGN_IN_TOP_MID);
 
 	//skills page
-	autonSkillsPage = createPage(autonomousPage, LV_HOR_RES, LV_VER_RES - 100, 0, 100, false);
+	autonSkillsPage = createPage(autonomousPage[0], LV_HOR_RES, LV_VER_RES - 100, 0, 100, false);
 	createLabel(autonSkillsPage, "The robot will do skills.", 0, 0, LV_ALIGN_IN_BOTTOM_MID);
 
 	/*********************************************/
-	/*         Autonomous Run Title Bar          */
+	/*               Autonomous Run              */
 	/*********************************************/
-	autonRunTitlePage = lv_page_create(autonomousRunPage, NULL);
-	lv_obj_set_size(autonRunTitlePage, LV_HOR_RES, 40);
-	lv_obj_set_style(autonRunTitlePage, &lv_style_transp_tight);
+	autonRunTypePage = createPage(autonomousRunPage[0], LV_HOR_RES, LV_VER_RES - 50, 0, 50, true);
 
-	autonRunTitleHome = createButton(autonRunTitlePage, SYMBOL_HOME, {100, 100, 100}, 100, 40, 0, 0, LV_ALIGN_IN_LEFT_MID);
-	autonRunTitleText = createLabel(autonRunTitlePage, "Autonomous Run", 0, 0, LV_ALIGN_CENTER);
-	autonRunTitleBack = createButton(autonRunTitlePage, SYMBOL_LEFT" Back", {100, 100, 100}, 100, 40, 0, 0, LV_ALIGN_IN_RIGHT_MID);
-
-	lv_btn_set_action(autonRunTitleHome, LV_BTN_ACTION_CLICK, btn_click_action);
-	lv_btn_set_action(autonRunTitleBack, LV_BTN_ACTION_CLICK, btn_click_action);
+	autonRunNormal = createButton(autonRunTypePage, "Normal (15s) (A)", {50, 50, 200}, 170, 40, 0, 0);
+	autonRunSkills = createButton(autonRunTypePage, "Skills (60s) (B)", {50, 150, 50}, 150, 40, 180, 0);
+	autonRunUnlimited = createButton(autonRunTypePage, "Unlimited (Y)", {200, 175, 0}, 150, 40, 340, 0);
 }
 
 void disabled()
 {
-	setAutonomousNav(false);
+	setNavigation(false);
 	setPage(1);
 }
 
 void competition_initialize()
 {
-	setAutonomousNav(false);
+	setNavigation(false);
 	setPage(1);
 }

@@ -42,34 +42,44 @@ bool autonRed = true;
 bool autonNear = true;
 bool autonPlatform = true;
 
+int activePage = 0;
+int runAutonomous = -1;
+
 lv_style_t screenStyle = lv_style_scr;
 
-lv_obj_t * homePage;
-lv_obj_t * homeTitlePage, * homeTitleText, * homeTitleAuton;
+lv_obj_t * * homePage;
 lv_obj_t * homeTextPage, * homeTextObject;
+char buffer[250];
 
-lv_obj_t * autonomousPage;
-lv_obj_t * autonTitlePage, * autonTitleHome, * autonTitleText, * autonTitleRun;
+lv_obj_t * * autonomousPage;
 lv_obj_t * autonTypePage, * autonNone, * autonSides, * autonSkills;
 lv_obj_t * autonNonePage;
 lv_obj_t * autonSidesPage, * autonSideColor, * autonSideDistance, * autonSidePlatform;
 lv_obj_t * autonSideDescription;
 lv_obj_t * autonSkillsPage;
 
-lv_obj_t * autonomousRunPage;
-lv_obj_t * autonRunTitlePage, * autonRunTitleHome, * autonRunTitleText, * autonRunTitleBack;
+lv_obj_t * * autonomousRunPage;
+lv_obj_t * autonRunTypePage, * autonRunNormal, * autonRunSkills, * autonRunUnlimited;
 
-void setAutonomousNav(bool nav)
+bool pageNavigation = true;
+
+void setNavigation(bool nav)
 {
-    lv_obj_set_hidden(autonTitleHome, !nav);
-    lv_obj_set_hidden(autonTitleRun, !nav);
+    pageNavigation = nav;
+    lv_obj_set_hidden(homePage[1], !nav);
+    lv_obj_set_hidden(homePage[2], !nav);
+    lv_obj_set_hidden(autonomousPage[1], !nav);
+    lv_obj_set_hidden(autonomousPage[2], !nav);
+    lv_obj_set_hidden(autonomousRunPage[1], !nav);
+    lv_obj_set_hidden(autonomousRunPage[2], !nav);
 }
 
 void setPage(int page)
 {
-    lv_obj_set_hidden(homePage, page != 0);
-    lv_obj_set_hidden(autonomousPage, page != 1);
-    lv_obj_set_hidden(autonomousRunPage, page != 2);
+    activePage = page;
+    lv_obj_set_hidden(homePage[0], page != 0);
+    lv_obj_set_hidden(autonomousPage[0], page != 1);
+    lv_obj_set_hidden(autonomousRunPage[0], page != 2);
 }
 
 const char * generateSidesDescription()

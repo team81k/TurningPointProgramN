@@ -37,21 +37,22 @@ extern bool autonPlatform;
 
 extern lv_style_t screenStyle;
 
-extern lv_obj_t * homePage;
-extern lv_obj_t * homeTitlePage, * homeTitleText, * homeTitleAuton;
+extern lv_obj_t * * homePage;
 extern lv_obj_t * homeTextPage, * homeTextObject;
+extern char buffer[250];
 
-extern lv_obj_t * autonomousPage;
-extern lv_obj_t * autonTitlePage, * autonTitleHome, * autonTitleText, * autonTitleRun;
+extern lv_obj_t * * autonomousPage;
 extern lv_obj_t * autonTypePage, * autonNone, * autonSides, * autonSkills;
 extern lv_obj_t * autonNonePage;
 extern lv_obj_t * autonSidesPage, * autonSideColor, * autonSideDistance, * autonSidePlatform;
 extern lv_obj_t * autonSideDescription;
 extern lv_obj_t * autonSkillsPage;
 
-extern lv_obj_t * autonomousRunPage;
-extern lv_obj_t * autonRunTitlePage, * autonRunTitleHome, * autonRunTitleText, * autonRunTitleBack;
+extern lv_obj_t * * autonomousRunPage;
+extern lv_obj_t * autonRunTypePage, * autonRunNormal, * autonRunSkills, * autonRunUnlimited;
 
-void setAutonomousNav(bool nav);
+extern bool pageNavigation;
+
+void setNavigation(bool nav);
 void setPage(int page);
 const char * generateSidesDescription();

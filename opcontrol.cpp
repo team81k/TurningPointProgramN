@@ -6,7 +6,7 @@ bool arcadeDrive = false;
 
 void opcontrol()
 {
-	setAutonomousNav(true);
+	setNavigation(true);
 	setPage(0);
 
 	while(true)
@@ -80,6 +80,64 @@ void opcontrol()
 			, robotDir * 180.0 / PI);
 		lv_label_set_text(homeTextObject, buffer);
 
+		//pages
+		while(activePage == 1)
+		{
+			pros::delay(3);
+		}
+
+		while(activePage == 2 && runAutonomous == -1)
+		{
+			if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) runAutonomous = 0;
+			if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) runAutonomous = 1;
+			if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) runAutonomous = 2;
+
+			pros::delay(3);
+		}
+
+		if(runAutonomous != -1)
+		{
+			setNavigation(false);
+			setPage(0);
+
+			char * autonTypeString = (char*)"";
+			if(runAutonomous == 0) autonTypeString = (char*)"15 seconds";
+			if(runAutonomous == 1) autonTypeString = (char*)"60 seconds";
+			if(runAutonomous == 2) autonTypeString = (char*)"unlimited";
+
+			pros::task_t autonTask = pros::c::task_create([](void * param){autonomous();},
+				(void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "AutonomousTask");
+
+			long autonStartTime = pros::millis();
+
+			while(true)
+			{
+				long elapsedTime = pros::millis() - autonStartTime;
+
+				if(runAutonomous == 0 && elapsedTime > 15000) break;
+				if(runAutonomous == 1 && elapsedTime > 60000) break;
+
+				if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) break;
+
+				sprintf(buffer, "Press (X) to stop\n\n"
+				"Auton Type: %s\n"
+				"Time Elapsed: %i",
+				autonTypeString,
+				(int)(elapsedTime / 1000));
+				lv_label_set_text(homeTextObject, buffer);
+
+				pros::delay(3);
+			}
+
+			if(pros::c::task_get_state(autonTask) != TASK_STATE_DELETED) pros::c::task_delete(autonTask);
+
+			runAutonomous = -1;
+
+			setNavigation(true);
+			setPage(0);
+		}
+
+		//Delay
 		pros::delay(3);
 	}
 }
