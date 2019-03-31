@@ -3,11 +3,17 @@
 #include "pid.hpp"
 
 bool arcadeDrive = false;
+double flywheelSpeed = 0;
+double flywheelPower = 0;
+bool launch = false;
+long launchStart = 0;
 
 void opcontrol()
 {
 	setNavigation(true);
 	setPage(0);
+
+	flywheel.set_brake_mode(MOTOR_BRAKE_BRAKE);
 
 	while(true)
 	{
@@ -50,34 +56,59 @@ void opcontrol()
 		FL.move(FLP);
 		BL.move(BLP);
 
-		/*if((fabs(differentialPID.getError()) < 25))
-		{
-			FR.move(rightSide.calculate());
-			BR.move(rightSide.getPower());
-			FL.move(leftSide.calculate());
-			BL.move(leftSide.getPower());
-		}
-		else
-		{
-			FR.move(differentialPower);
-			BR.move(-differentialPower);
-			FL.move(differentialPower);
-			BL.move(-differentialPower);
-		}*/
-
 		//Transform
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) differentialPID.target = DIFFERENTIAL_UP;
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) differentialPID.target = DIFFERENTIAL_DOWN;
 
+		//Flywheel / Intake
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) flywheelSpeed = 60;
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) flywheelSpeed = 80;
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) flywheelSpeed = 100;
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) flywheelSpeed = 0;
+
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) intake.move(100);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) intake.move(0);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) intake.move(-100);
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
+		{
+			launch = true;
+			launchStart = pros::millis();
+		}
+
+		flywheelPID1.target = flywheelSpeed * 6;
+		flywheelPID2.target = flywheelSpeed * 6;
+		double flywheelActualSpeed = flywheel.get_actual_velocity();
+		flywheelPower = flywheelPID1.calculate(flywheelActualSpeed);
+		if(fabs(flywheelPID1.getError()) < 0.2 * 600)
+		{
+			flywheelPower = flywheelPID2.calculate(flywheelActualSpeed) + flywheelSpeed * 1.2;
+			flywheelPID1.setPower(flywheelPower);
+		}
+
+		if(flywheelPower > 127) flywheelPower = 127;
+		if(flywheelPower < -127) flywheelPower = -127;
+
+		if(launch && pros::millis() - launchStart < 50) flywheel.move(0);
+		else
+		{
+			flywheel.move(flywheelPower);
+			//flywheel.move_velocity(flywheelSpeed * 6);
+		}
+
 		//Display values
-		char buffer[250];
 		sprintf(buffer,
 			"pot: %i\n"
 			"robot: (%f, %f)\n"
 			"angle: %fdeg\n"
+			"flywheelPower: %f\n"
+			"speed: %f\n"
+			"flywheelSpeed: %f"
 			, differentialPot.get_value()
 			, robotX, robotY
-			, robotDir * 180.0 / PI);
+			, robotDir * 180.0 / PI
+			, flywheelPower
+			, flywheel.get_actual_velocity() / 6
+			, flywheelSpeed);
 		lv_label_set_text(homeTextObject, buffer);
 
 		//pages
