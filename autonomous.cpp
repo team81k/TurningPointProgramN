@@ -72,8 +72,8 @@ void driveStraight(double meters, bool wait = true, long timeout = -1)
     driveType = 1;
     FR.tare_position();BR.tare_position();FL.tare_position();BL.tare_position();
     forwardDrivePID.clear();
-    forwardDrivePID.target = (meters / wheelCircumference) / gearRatio * ticksPerRevolution;
-    driveThreshold = 50;
+    forwardDrivePID.target = getDriveStraightTicks(meters);
+    driveThreshold = getDriveStraightTicks(0.25_in);
     autonPIDReady = false;
     long waitStart = pros::millis();
     if(wait) while((fabs(forwardDrivePID.getError()) > driveThreshold || !autonPIDReady) && (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
@@ -84,9 +84,8 @@ void driveTurn(double radians, bool wait = true, long timeout = -1)
     driveType = 2;
     FR.tare_position();BR.tare_position();FL.tare_position();BL.tare_position();
     turnDrivePID.clear();
-    double inches = (PI * wheelWidth) * (radians / TAU);
-    turnDrivePID.target = (inches / wheelCircumference) / gearRatio * ticksPerRevolution;
-    driveThreshold = 50;
+    turnDrivePID.target = getDriveTurnTicks(radians);
+    driveThreshold = getDriveTurnTicks(1_deg);
     autonPIDReady = false;
     long waitStart = pros::millis();
     if(wait) while((fabs(turnDrivePID.getError()) > driveThreshold || !autonPIDReady) && (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);

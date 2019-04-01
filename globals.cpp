@@ -24,6 +24,11 @@ double ticksPerRevolution = 900;
 300 ticks/rev with 6:1 gears (blue)
 */
 
+double getDriveStraightTicks(double meters)
+{ return (meters / wheelCircumference) / gearRatio * ticksPerRevolution; }
+double getDriveTurnTicks(double radians)
+{ return getDriveStraightTicks((PI * wheelWidth) * (radians / TAU)); }
+
 pid rightSide(0, 0, 0, -127, 127, 0);
 pid leftSide(0, 0, 0, -127, 127, 0);
 pid differentialPID(0.15, 0, 0.012, -90, 90, 127 * 3);

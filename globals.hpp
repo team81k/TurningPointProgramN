@@ -20,6 +20,9 @@ extern double wheelCircumference;
 extern double gearRatio;
 extern double ticksPerRevolution;
 
+double getDriveStraightTicks(double meters);
+double getDriveTurnTicks(double radians);
+
 extern pid rightSide;
 extern pid leftSide;
 extern pid differentialPID;
