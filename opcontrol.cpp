@@ -8,12 +8,12 @@ double flywheelPower = 0;
 bool launch = false;
 long launchStart = 0;
 
+long update = 0;
+
 void opcontrol()
 {
 	setNavigation(true);
 	setPage(0);
-
-	flywheel.set_brake_mode(MOTOR_BRAKE_BRAKE);
 
 	while(true)
 	{
@@ -98,13 +98,19 @@ void opcontrol()
 		sprintf(buffer,
 			"pot: %i\n"
 			"robot: (%f, %f)\n"
-			"angle: %fdeg\n"
-			"current: %i"
+			"angle: %fdeg\n" "error: %f"
 			, differentialPot.get_value()
 			, robotX, robotY
-			, robotDir * 180.0 / PI
-			, flywheel.get_current_draw());
+			, robotDir * 180.0 / PI, flywheelPID1.getError());
 		lv_label_set_text(homeTextObject, buffer);
+
+		if(pros::millis() - update > 50)
+		{
+			update = pros::millis();
+			lv_chart_set_next(homeChart, series[0], flywheelPower * (100.0 / 127.0));
+			lv_chart_set_next(homeChart, series[1], flywheelActualSpeed / 6.0);
+			lv_chart_set_next(homeChart, series[2], flywheelSpeed);
+		}
 
 		//pages
 		while(activePage == 1)
