@@ -172,6 +172,11 @@ lv_obj_t * * createPage(lv_obj_t * parent, const char * lButton, const char * ti
 
 void initialize()
 {
+	FR.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	FL.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	BR.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	BL.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	flywheel.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	differentialPID.target = 4095;
 
 	screenStyle.body.empty = false;
