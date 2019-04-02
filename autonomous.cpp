@@ -9,8 +9,15 @@ bool autonPIDReady = false;
 
 void autonomousAsync(void * param)
 {
+    driveType = 0;
+    flywheelSpeed = 0;
+    flywheelPower = 0;
+    flywheelLaunchStart = 0;
+    autonPIDReady = false;
+
     while(true)
     {
+        //Drive
         double rightPower = 0;
         double leftPower = 0;
 
@@ -51,6 +58,44 @@ void autonomousAsync(void * param)
         FL.move(FLP);
         BL.move(BLP);
 
+        //flywheel
+        flywheelPID1.setTarget(flywheelSpeed * 6);
+		flywheelPID2.setTarget(flywheelSpeed * 6);
+		double flywheelActualSpeed = flywheel.get_actual_velocity();
+		flywheelPower = flywheelPID1.calculate(flywheelActualSpeed);
+		if(fabs(flywheelPID1.getError()) < 0.15 * 600.0)
+		{
+			flywheelPower = flywheelPID2.calculate(flywheelActualSpeed) + flywheelSpeed * 1.2;
+			flywheelPID1.setPower(flywheelPower);
+		}
+
+		if(flywheelPower > 127) flywheelPower = 127;
+		if(flywheelPower < -127) flywheelPower = -127;
+
+		if(flywheelLaunchStart != -1 && pros::millis() - flywheelLaunchStart < 50) flywheel.move(0);
+		else
+		{
+			flywheel.move(flywheelPower);
+		}
+
+        if(flywheelLaunchStart != -1 && pros::millis() - flywheelLaunchStart > 50) flywheelLaunchStart = -1;
+
+        //Display values
+		/*sprintf(buffer,
+			"robot: (%f, %f)\n"
+			"angle: %fdeg\n",
+            robotX, robotY,
+            robotDir * 180.0 / PI);
+		lv_label_set_text(homeTextObject, buffer);*/
+
+		if(pros::millis() - update > 50)
+		{
+			update = pros::millis();
+			lv_chart_set_next(homeChart, series[0], flywheelPower * (100.0 / 127.0));
+			lv_chart_set_next(homeChart, series[1], flywheelActualSpeed / 6.0);
+			lv_chart_set_next(homeChart, series[2], flywheelSpeed);
+		}
+
         autonPIDReady = true;
 
         pros::delay(3);
@@ -64,7 +109,8 @@ void driveTransform(double position, bool wait = true, long timeout = -1)
     differentialPID.setTarget(position);
     autonPIDReady = false;
     long waitStart = pros::millis();
-    if(wait) while((fabs(differentialPID.getError()) > 25 || !autonPIDReady) && (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
+    if(wait) while((fabs(differentialPID.getError()) > 25 || !autonPIDReady) &&
+        (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
 }
 
 void driveStraight(double meters, bool wait = true, long timeout = -1)
@@ -76,7 +122,8 @@ void driveStraight(double meters, bool wait = true, long timeout = -1)
     driveThreshold = getDriveStraightTicks(0.25_in);
     autonPIDReady = false;
     long waitStart = pros::millis();
-    if(wait) while((fabs(forwardDrivePID.getError()) > driveThreshold || !autonPIDReady) && (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
+    if(wait) while((fabs(forwardDrivePID.getError()) > driveThreshold || !autonPIDReady) &&
+        (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
 }
 
 void driveTurn(double radians, bool wait = true, long timeout = -1)
@@ -88,17 +135,51 @@ void driveTurn(double radians, bool wait = true, long timeout = -1)
     driveThreshold = getDriveTurnTicks(1_deg);
     autonPIDReady = false;
     long waitStart = pros::millis();
-    if(wait) while((fabs(turnDrivePID.getError()) > driveThreshold || !autonPIDReady) && (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
+    if(wait) while((fabs(turnDrivePID.getError()) > driveThreshold || !autonPIDReady) &&
+        (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
 }
 
 void waitOnDrive(long timeout = -1)
 {
     long waitStart = pros::millis();
-    if(driveType == 1) while((fabs(forwardDrivePID.getError()) > driveThreshold || fabs(differentialPID.getError()) > 25 || !autonPIDReady) && (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
-    else if(driveType == 2) while((fabs(turnDrivePID.getError()) > driveThreshold || fabs(differentialPID.getError()) > 25 || !autonPIDReady) && (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
+    if(driveType == 1) while((fabs(forwardDrivePID.getError()) > driveThreshold ||
+        fabs(differentialPID.getError()) > 25 || !autonPIDReady) &&
+        (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
+    else if(driveType == 2) while((fabs(turnDrivePID.getError()) > driveThreshold ||
+        fabs(differentialPID.getError()) > 25 || !autonPIDReady) &&
+        (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
 }
 
 void driveStop() { driveType = 0; }
+
+void flywheelSpin(double speed, bool wait = true, long timeout = -1)
+{
+    flywheelSpeed = speed;
+    autonPIDReady = false;
+    long waitStart = pros::millis();
+    if(wait) while((fabs(flywheelPID1.getError()) > 0.015 * 600 || !autonPIDReady) &&
+        (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
+}
+
+void waitOnFlywheel(long timeout = -1)
+{
+    long waitStart = pros::millis();
+    while((fabs(flywheelPID1.getError()) > 0.015 * 600 || !autonPIDReady) &&
+        (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
+}
+
+void intakeSpin(double speed)
+{
+    intake.move(speed);
+}
+
+void launchBall(bool wait = true, long timeout = -1)
+{
+    flywheelLaunchStart = pros::millis();
+    long waitStart = pros::millis();
+    if(wait) while(flywheelLaunchStart != -1 &&
+        (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,10 +193,10 @@ void driveStraight(double meters, bool wait = true, long timeout = -1);
 void driveTurn(double radians, bool wait = true, long timeout = -1);
 void waitOnDrive(long timeout = -1);
 void driveStop();
-void flywheelSpeed(double speed, bool wait = true, long timeout = -1);
-void waitOnFlywheel();
-void intakeIn();
-void launchBall(bool wait =  true, long timeout = -1);
+void flywheelSpin(double speed, bool wait = true, long timeout = -1);
+void waitOnFlywheel(long timeout = -1);
+void intakeSpin(double speed);
+void launchBall(bool wait = true, long timeout = -1);
 */
 
 void autonomous()
