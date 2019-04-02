@@ -90,6 +90,9 @@ void opcontrol()
 
 		if(flywheelLaunchStart != -1 && pros::millis() - flywheelLaunchStart > 50) flywheelLaunchStart = -1;
 
+		//Hood
+		hood.move(-hoodPID.calculate(hoodPot.get_value()));
+
 		//Display values
 		sprintf(buffer,
 			"robot: (%f, %f)\n"

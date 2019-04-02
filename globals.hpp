@@ -9,11 +9,18 @@ extern pros::Controller partner;
 extern pros::Motor FR, FL, BR, BL;
 extern pros::Motor flywheel;
 extern pros::Motor intake;
+extern pros::Motor hood;
 
 extern double DIFFERENTIAL_UP;
 extern double DIFFERENTIAL_DOWN;
 
+extern double HOOD_UP;
+extern double HOOD_DOWN;
+
 extern pros::ADIPotentiometer differentialPot;
+extern pros::ADIPotentiometer hoodPot;
+
+extern bool differentialStay;
 
 extern double flywheelSpeed;
 extern double flywheelPower;
@@ -33,6 +40,7 @@ extern pid leftSide;
 extern pid differentialPID;
 extern pid flywheelPID1;
 extern pid flywheelPID2;
+extern pid hoodPID;
 
 extern pid forwardDrivePID;
 extern pid turnDrivePID;
@@ -40,8 +48,6 @@ extern pid turnDrivePID;
 extern double robotX;
 extern double robotY;
 extern double robotDir;
-
-extern pros::task_t autonomousAsyncTask;
 
 extern int autonType;
 

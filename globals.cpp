@@ -8,11 +8,17 @@ pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 pros::Motor FR(1), FL(2, true), BR(3), BL(4, true);
 pros::Motor flywheel(5, pros::E_MOTOR_GEARSET_06, true);
 pros::Motor intake(6);
+pros::Motor hood(7);
 
 double DIFFERENTIAL_UP = 4095;
 double DIFFERENTIAL_DOWN = 10;
 
+double HOOD_UP = 600;
+double HOOD_DOWN = 4050;
+
 pros::ADIPotentiometer differentialPot('a');
+pros::ADIPotentiometer hoodPot('c');
+
 
 double flywheelSpeed = 0;
 double flywheelPower = 0;
@@ -39,9 +45,10 @@ pid leftSide(0, 0, 0, -127, 127, 0);
 pid differentialPID(0.15, 0, 0.012, -90, 90, 127 * 3);
 pid flywheelPID1(1.8, 0, 0, -127, 127, 127);
 pid flywheelPID2(0.15, 0, 0, -127, 127, 127);
+pid hoodPID(0.025, 0, 0, -127, 127, 0);
 
-pid forwardDrivePID(0.2, 0, 0.05, -100, 100, 127 * 3);
-pid turnDrivePID(0.4, 0.001, 0.025, -100, 100, 127 * 3);
+pid forwardDrivePID(0.35, 0, 0.05, -100, 100, 127 * 3);
+pid turnDrivePID(0.45, 0.002, 0.02, -100, 100, 127 * 3);
 
 double robotX = 0; //in inches
 double robotY = 0;
