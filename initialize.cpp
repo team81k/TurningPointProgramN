@@ -177,8 +177,8 @@ void initialize()
 	BR.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	BL.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	flywheel.set_brake_mode(MOTOR_BRAKE_BRAKE);
-	differentialPID.target = 4095;
 	flywheelPID1.negativeSlew = 127.0 / 5.0;
+	differentialPID.setTarget(4095);
 
 	screenStyle.body.empty = false;
 	screenStyle.body.main_color = LV_COLOR_MAKE(50, 50, 50);
