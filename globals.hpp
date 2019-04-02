@@ -50,7 +50,8 @@ extern int runAutonomous;
 extern lv_style_t screenStyle;
 
 extern lv_obj_t * * homePage;
-extern lv_obj_t * homeTextPage, * homeTextObject;
+extern lv_obj_t * homeTextPage, * homeTextObject, * homeChart;
+extern lv_chart_series_t * seriesZero, * series[10];
 extern char buffer[250];
 
 extern lv_obj_t * * autonomousPage;
@@ -62,6 +63,7 @@ extern lv_obj_t * autonSkillsPage;
 
 extern lv_obj_t * * autonomousRunPage;
 extern lv_obj_t * autonRunTypePage, * autonRunNormal, * autonRunSkills, * autonRunUnlimited;
+extern lv_obj_t * autonRunDescription;
 
 extern bool pageNavigation;
 

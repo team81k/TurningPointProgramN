@@ -59,7 +59,8 @@ int runAutonomous = -1;
 lv_style_t screenStyle = lv_style_scr;
 
 lv_obj_t * * homePage;
-lv_obj_t * homeTextPage, * homeTextObject;
+lv_obj_t * homeTextPage, * homeTextObject, * homeChart;
+lv_chart_series_t * seriesZero, * series[10];
 char buffer[250];
 
 lv_obj_t * * autonomousPage;
@@ -71,6 +72,7 @@ lv_obj_t * autonSkillsPage;
 
 lv_obj_t * * autonomousRunPage;
 lv_obj_t * autonRunTypePage, * autonRunNormal, * autonRunSkills, * autonRunUnlimited;
+lv_obj_t * autonRunDescription;
 
 bool pageNavigation = true;
 
@@ -102,6 +104,6 @@ const char * generateSidesDescription()
     else description += "Far, ";
     if(autonPlatform) description += "Platform: Yes";
     else description += "Platform: No";
-    description += ". And stuff.";
+    description += ". And stuff. Bla Bla Bla.";
     return description.c_str();
 }

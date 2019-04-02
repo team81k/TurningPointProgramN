@@ -81,6 +81,10 @@ lv_res_t btn_click_action(lv_obj_t * btn)
 	if(btn == autonRunSkills) runAutonomous = 1;
 	if(btn == autonRunUnlimited) runAutonomous = 2;
 
+	if(autonType == 0) lv_label_set_text(autonRunDescription, "The robot will do nothing.");
+	if(autonType == 1) lv_label_set_text(autonRunDescription, generateSidesDescription());
+	if(autonType == 2) lv_label_set_text(autonRunDescription, "The robot will do skills.");
+
 	return LV_RES_OK;
 }
 
@@ -96,7 +100,6 @@ lv_obj_t * createLabel(lv_obj_t * parent, const char * text,
 	if(x != INT16_MAX && y != INT16_MAX) lv_obj_align(label, NULL, align, x ,y);
 	if(width != INT16_MAX) lv_obj_set_width(label, width);
 	if(height != INT16_MAX) lv_obj_set_height(label, height);
-	lv_page_glue_obj(label, true);
 	return label;
 }
 
@@ -186,6 +189,23 @@ void initialize()
 	/*********************************************/
 	/*               Home Text View              */
 	/*********************************************/
+	homeChart = lv_chart_create(homePage[0], NULL);
+	lv_obj_set_size(homeChart, LV_HOR_RES, LV_VER_RES - 50);
+	lv_obj_set_pos(homeChart, 0, 50);
+	lv_chart_set_range(homeChart, -20, 120);
+	lv_chart_set_point_count(homeChart, LV_HOR_RES);
+	lv_obj_set_style(homeChart, &lv_style_transp);
+	lv_chart_set_div_line_count(homeChart, 0, 0);
+
+	seriesZero = lv_chart_add_series(homeChart, LV_COLOR_WHITE);
+	lv_chart_init_points(homeChart, seriesZero, 0);
+
+	series[0] = lv_chart_add_series(homeChart, LV_COLOR_RED);
+	series[1] = lv_chart_add_series(homeChart, LV_COLOR_GREEN);
+	series[2] = lv_chart_add_series(homeChart, LV_COLOR_ORANGE);
+
+	for(int i = 0; i < 3; i++) lv_chart_init_points(homeChart, series[i], 0);
+
 	homeTextPage = createPage(homePage[0], LV_HOR_RES - 10, LV_VER_RES - 50, 5, 45);
 	homeTextObject = createLabel(homeTextPage, "", 0, 0, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES, INT16_MAX, LV_LABEL_ALIGN_LEFT);
 
@@ -210,7 +230,7 @@ void initialize()
 
 	//none page
 	autonNonePage = createPage(autonomousPage[0], LV_HOR_RES, LV_VER_RES - 100, 0, 100, true);
-	createLabel(autonNonePage, "The robot will do nothing.", 0, 0, LV_ALIGN_IN_BOTTOM_MID);
+	createLabel(autonNonePage, "The robot will do nothing.", 10, 0, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES - 20);
 
 	//sides page
 	autonSidesPage = createPage(autonomousPage[0], LV_HOR_RES, LV_VER_RES - 100, 0, 100, false);
@@ -219,11 +239,11 @@ void initialize()
 	autonSideDistance = createButton(autonSidesPage, "Near", {100, 100, 100}, 100, 40, 110, 0);
 	autonSidePlatform = createButton(autonSidesPage, "Platform: Yes", {100, 100, 100}, 200, 40, 220, 0);
 
-	autonSideDescription = createLabel(autonSidesPage, generateSidesDescription(), 0, 50, LV_ALIGN_IN_TOP_MID);
+	autonSideDescription = createLabel(autonSidesPage, generateSidesDescription(), 10, 50, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES - 20);
 
 	//skills page
 	autonSkillsPage = createPage(autonomousPage[0], LV_HOR_RES, LV_VER_RES - 100, 0, 100, false);
-	createLabel(autonSkillsPage, "The robot will do skills.", 0, 0, LV_ALIGN_IN_BOTTOM_MID);
+	createLabel(autonSkillsPage, "The robot will do skills.", 10, 0, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES - 20);
 
 	/*********************************************/
 	/*               Autonomous Run              */
@@ -233,6 +253,8 @@ void initialize()
 	autonRunNormal = createButton(autonRunTypePage, "Normal (15s) (A)", {50, 50, 200}, 170, 40, 0, 0);
 	autonRunSkills = createButton(autonRunTypePage, "Skills (60s) (B)", {50, 150, 50}, 150, 40, 180, 0);
 	autonRunUnlimited = createButton(autonRunTypePage, "Unlimited (Y)", {200, 175, 0}, 150, 40, 340, 0);
+
+	autonRunDescription = createLabel(autonRunTypePage, "The robot will do nothing.", 10, 50, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES - 20);
 }
 
 void disabled()
