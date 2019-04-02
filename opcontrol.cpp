@@ -57,8 +57,8 @@ void opcontrol()
 		BL.move(BLP);
 
 		//Transform
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) differentialPID.setTarget(DIFFERENTIAL_UP);
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) differentialPID.setTarget(DIFFERENTIAL_DOWN);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) differentialPID.setTarget(DIFFERENTIAL_UP);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) differentialPID.setTarget(DIFFERENTIAL_DOWN);
 
 		//Flywheel / Intake
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) flywheelSpeed = 60;
