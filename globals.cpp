@@ -33,7 +33,7 @@ pid rightSide(0, 0, 0, -127, 127, 0);
 pid leftSide(0, 0, 0, -127, 127, 0);
 pid differentialPID(0.15, 0, 0.012, -90, 90, 127 * 3);
 pid flywheelPID1(1.8, 0, 0, -127, 127, 127 / 3);
-pid flywheelPID2(0.15, 0.005, 0, -127, 127, 127 / 3);
+pid flywheelPID2(0.15, 0, 0, -127, 127, 127 / 3);
 
 pid forwardDrivePID(0.4, 0, 0.05, -127, 127, 127 * 3);
 pid turnDrivePID(0.4, 0.001, 0.025, -127, 127, 127 * 3);
