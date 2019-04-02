@@ -25,6 +25,7 @@ extern bool differentialStay;
 extern double flywheelSpeed;
 extern double flywheelPower;
 extern long flywheelLaunchStart;
+extern int doubleShot;
 extern long update;
 
 extern double wheelWidth;

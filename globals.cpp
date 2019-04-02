@@ -19,10 +19,12 @@ double HOOD_DOWN = 4050;
 pros::ADIPotentiometer differentialPot('a');
 pros::ADIPotentiometer hoodPot('c');
 
+bool differentialStay = true;
 
 double flywheelSpeed = 0;
 double flywheelPower = 0;
 long flywheelLaunchStart = 0;
+int doubleShot = 0;
 long update = 0;
 
 double wheelWidth = (13.6_in + 10.5_in) / 2.0; //inches
@@ -53,8 +55,6 @@ pid turnDrivePID(0.45, 0.002, 0.02, -100, 100, 127 * 3);
 double robotX = 0; //in inches
 double robotY = 0;
 double robotDir = 0; //radians
-
-pros::task_t autonomousAsyncTask;
 
 //0 = none
 //1 = sides

@@ -29,6 +29,7 @@ void opcontrol()
 		}
 
 		double differentialPower = differentialPID.calculate(differentialPot.get_value());
+		if(differentialStay) differentialPower = 0;
 
 		double FRP = rightSide.calculate() + differentialPower;
 		double BRP = rightSide.getPower() - differentialPower;
@@ -51,19 +52,29 @@ void opcontrol()
 		BL.move(BLP);
 
 		//Transform
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) differentialPID.setTarget(DIFFERENTIAL_UP);
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) differentialPID.setTarget(DIFFERENTIAL_DOWN);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
+		{
+			differentialStay = false;
+			differentialPID.setTarget(DIFFERENTIAL_UP);
+		}
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
+		{
+			differentialStay = false;
+			differentialPID.setTarget(DIFFERENTIAL_DOWN);
+		}
+
+		//Double Shot
 
 		//Flywheel / Intake
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) flywheelSpeed = 60;
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) flywheelSpeed = 80;
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) flywheelSpeed = 100;
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) flywheelSpeed = 0;
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_X) && !doubleShot) flywheelSpeed = 60;
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && !doubleShot) flywheelSpeed = 80;
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && !doubleShot) flywheelSpeed = 100;
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y) && !doubleShot) flywheelSpeed = 0;
 
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) intake.move(70);
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) intake.move(0);
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) intake.move(-70);
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) && !doubleShot) hoodPID.setTarget(HOOD_UP);//intake.move(70);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT) && !doubleShot) hoodPID.setTarget(HOOD_DOWN);//intake.move(0);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT) && !doubleShot) ;//intake.move(-70);
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN) && !doubleShot)
 		{
 			flywheelLaunchStart = pros::millis();
 		}
@@ -96,9 +107,11 @@ void opcontrol()
 		//Display values
 		sprintf(buffer,
 			"robot: (%f, %f)\n"
-			"angle: %fdeg\n",
+			"angle: %fdeg\n"
+			"hood: %i",
 			robotX, robotY,
-			robotDir * 180.0 / PI);
+			robotDir * 180.0 / PI,
+			hoodPot.get_value());
 		lv_label_set_text(homeTextObject, buffer);
 
 		if(pros::millis() - update > 50)
@@ -173,7 +186,7 @@ void opcontrol()
 			}
 
 			if(pros::c::task_get_state(autonTask) != TASK_STATE_DELETED) pros::c::task_delete(autonTask);
-			if(pros::c::task_get_state(autonomousAsyncTask) != TASK_STATE_DELETED) pros::c::task_delete(autonomousAsyncTask);
+			//if(pros::c::task_get_state(autonomousAsyncTask) != TASK_STATE_DELETED) pros::c::task_delete(autonomousAsyncTask);
 
 			runAutonomous = -1;
 
@@ -181,6 +194,10 @@ void opcontrol()
 
 			setNavigation(true);
 			setPage(0);
+
+			flywheelSpeed = 0;
+		    flywheelPower = 0;
+		    flywheelLaunchStart = 0;
 		}
 
 		//Delay
