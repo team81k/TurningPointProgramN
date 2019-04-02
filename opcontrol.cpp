@@ -93,16 +93,9 @@ void opcontrol()
 		//Display values
 		sprintf(buffer,
 			"robot: (%f, %f)\n"
-			"angle: %fdeg\n"
-			"power: %f / 127\n"
-			"actual speed: %f / 600\n"
-			"battery: %i\n"
-			"integral: 0.0"
-			, robotX, robotY
-			, robotDir * 180.0 / PI
-			, flywheelPower
-			, flywheelActualSpeed
-			, pros::battery::get_voltage());
+			"angle: %fdeg\n",
+			robotX, robotY,
+			robotDir * 180.0 / PI);
 		lv_label_set_text(homeTextObject, buffer);
 
 		if(pros::millis() - update > 50)
