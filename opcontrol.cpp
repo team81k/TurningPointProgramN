@@ -96,12 +96,17 @@ void opcontrol()
 
 		//Display values
 		sprintf(buffer,
-			"pot: %i\n"
 			"robot: (%f, %f)\n"
-			"angle: %fdeg\n" "error: %f"
-			, differentialPot.get_value()
+			"angle: %fdeg\n"
+			"power: %f / 127\n"
+			"actual speed: %f / 600\n"
+			"battery: %i\n"
+			"integral: 0.0"
 			, robotX, robotY
-			, robotDir * 180.0 / PI, flywheelPID1.getError());
+			, robotDir * 180.0 / PI
+			, flywheelPower
+			, flywheelActualSpeed
+			, pros::battery::get_voltage());
 		lv_label_set_text(homeTextObject, buffer);
 
 		if(pros::millis() - update > 50)
