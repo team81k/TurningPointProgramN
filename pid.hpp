@@ -8,6 +8,7 @@ class pid
         double min = 0, max = 0;
         double Kp = 0, Ki = 0, Kd = 0;
         double slew = 0;
+        double negativeSlew = 0;
 
         int updateMin = 100; //in milliseconds
 

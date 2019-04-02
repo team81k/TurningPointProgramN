@@ -38,7 +38,8 @@ double pid::calculate(double value)
             {
                 double change = powerPreSlew - power;
                 if(change > slew * uM && slew != 0) change = slew * uM;
-                if(change < -slew * uM && slew != 0) change = -slew * uM;
+                if(change < -negativeSlew * uM && negativeSlew != 0) change = -negativeSlew * uM;
+                else if(change < -slew * uM && slew != 0) change = -slew * uM;
                 power += change;
             }
     }
