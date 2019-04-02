@@ -74,7 +74,7 @@ lv_res_t btn_click_action(lv_obj_t * btn)
 
 	if(btn == autonSideColor || btn == autonSideDistance || btn == autonSidePlatform)
 	{
-		lv_label_set_text(autonSideDescription, generateSidesDescription());
+		lv_label_set_text(autonSideDescription, generateSidesDescription().c_str());
 	}
 
 	if(btn == autonRunNormal) runAutonomous = 0;
@@ -82,7 +82,7 @@ lv_res_t btn_click_action(lv_obj_t * btn)
 	if(btn == autonRunUnlimited) runAutonomous = 2;
 
 	if(autonType == 0) lv_label_set_text(autonRunDescription, "The robot will do nothing.");
-	if(autonType == 1) lv_label_set_text(autonRunDescription, generateSidesDescription());
+	if(autonType == 1) lv_label_set_text(autonRunDescription, generateSidesDescription().c_str());
 	if(autonType == 2) lv_label_set_text(autonRunDescription, "The robot will do skills.");
 
 	return LV_RES_OK;
@@ -244,7 +244,7 @@ void initialize()
 	autonSideDistance = createButton(autonSidesPage, "Near", {100, 100, 100}, 100, 40, 110, 0);
 	autonSidePlatform = createButton(autonSidesPage, "Platform: Yes", {100, 100, 100}, 200, 40, 220, 0);
 
-	autonSideDescription = createLabel(autonSidesPage, generateSidesDescription(), 10, 50, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES - 20);
+	autonSideDescription = createLabel(autonSidesPage, generateSidesDescription().c_str(), 10, 50, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES - 20);
 
 	//skills page
 	autonSkillsPage = createPage(autonomousPage[0], LV_HOR_RES, LV_VER_RES - 100, 0, 100, false);

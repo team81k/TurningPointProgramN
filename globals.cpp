@@ -95,7 +95,7 @@ void setPage(int page)
     lv_obj_set_hidden(autonomousRunPage[0], page != 2);
 }
 
-const char * generateSidesDescription()
+std::string generateSidesDescription()
 {
     std::string description = "The robot will ";
 	if(autonRed) description += "Red, ";
@@ -105,5 +105,5 @@ const char * generateSidesDescription()
     if(autonPlatform) description += "Platform: Yes";
     else description += "Platform: No";
     description += ". And stuff. Bla Bla Bla.";
-    return description.c_str();
+    return description;
 }

@@ -69,4 +69,4 @@ extern bool pageNavigation;
 
 void setNavigation(bool nav);
 void setPage(int page);
-const char * generateSidesDescription();
+std::string generateSidesDescription();
