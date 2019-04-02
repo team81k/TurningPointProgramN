@@ -15,6 +15,11 @@ extern double DIFFERENTIAL_DOWN;
 
 extern pros::ADIPotentiometer differentialPot;
 
+extern double flywheelSpeed;
+extern double flywheelPower;
+extern long flywheelLaunchStart;
+extern long update;
+
 extern double wheelWidth;
 extern double wheelCircumference;
 extern double gearRatio;

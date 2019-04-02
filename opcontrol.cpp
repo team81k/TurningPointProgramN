@@ -3,12 +3,6 @@
 #include "pid.hpp"
 
 bool arcadeDrive = false;
-double flywheelSpeed = 0;
-double flywheelPower = 0;
-bool launch = false;
-long launchStart = 0;
-
-long update = 0;
 
 void opcontrol()
 {
@@ -71,8 +65,7 @@ void opcontrol()
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) intake.move(-70);
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
 		{
-			launch = true;
-			launchStart = pros::millis();
+			flywheelLaunchStart = pros::millis();
 		}
 
 		flywheelPID1.setTarget(flywheelSpeed * 6);
@@ -89,11 +82,13 @@ void opcontrol()
 		if(flywheelPower > 127) flywheelPower = 127;
 		if(flywheelPower < -127) flywheelPower = -127;
 
-		if(launch && pros::millis() - launchStart < 50) flywheel.move(0);
+		if(flywheelLaunchStart != -1 && pros::millis() - flywheelLaunchStart < 50) flywheel.move(0);
 		else
 		{
 			flywheel.move(flywheelPower);
 		}
+
+		if(flywheelLaunchStart != -1 && pros::millis() - flywheelLaunchStart > 50) flywheelLaunchStart = -1;
 
 		//Display values
 		sprintf(buffer,

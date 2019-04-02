@@ -14,6 +14,11 @@ double DIFFERENTIAL_DOWN = 10;
 
 pros::ADIPotentiometer differentialPot('a');
 
+double flywheelSpeed = 0;
+double flywheelPower = 0;
+long flywheelLaunchStart = 0;
+long update = 0;
+
 double wheelWidth = (13.6_in + 10.5_in) / 2.0; //inches
 double wheelCircumference = PI * 4_in; //inches
 double gearRatio = 18.0 / 15.0;
