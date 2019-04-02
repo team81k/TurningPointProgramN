@@ -66,9 +66,9 @@ void opcontrol()
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) flywheelSpeed = 100;
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) flywheelSpeed = 0;
 
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) intake.move(100);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) intake.move(70);
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) intake.move(0);
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) intake.move(-100);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) intake.move(-70);
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
 		{
 			launch = true;
