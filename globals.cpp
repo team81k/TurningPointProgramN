@@ -61,7 +61,7 @@ lv_style_t screenStyle = lv_style_scr;
 lv_obj_t * * homePage;
 lv_obj_t * homeTextPage, * homeTextObject, * homeChart;
 lv_chart_series_t * seriesZero, * series[10];
-char buffer[250];
+char buffer[512];
 
 lv_obj_t * * autonomousPage;
 lv_obj_t * autonTypePage, * autonNone, * autonSides, * autonSkills;
