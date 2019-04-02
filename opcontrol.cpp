@@ -109,11 +109,25 @@ void opcontrol()
 		//pages
 		while(activePage == 1)
 		{
+			FR.move(0);
+			FL.move(0);
+			BR.move(0);
+			BL.move(0);
+			flywheel.move(0);
+			intake.move(0);
+
 			pros::delay(3);
 		}
 
 		while(activePage == 2 && runAutonomous == -1)
 		{
+			FR.move(0);
+			FL.move(0);
+			BR.move(0);
+			BL.move(0);
+			flywheel.move(0);
+			intake.move(0);
+
 			if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) runAutonomous = 0;
 			if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) runAutonomous = 1;
 			if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) runAutonomous = 2;
@@ -143,7 +157,7 @@ void opcontrol()
 				if(runAutonomous == 0 && elapsedTime > 15000) break;
 				if(runAutonomous == 1 && elapsedTime > 60000) break;
 
-				if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) break;
+				if(master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) break;
 
 				sprintf(buffer, "Press (X) to stop\n\n"
 				"Auton Type: %s\n"
@@ -159,6 +173,8 @@ void opcontrol()
 			if(pros::c::task_get_state(autonomousAsyncTask) != TASK_STATE_DELETED) pros::c::task_delete(autonomousAsyncTask);
 
 			runAutonomous = -1;
+
+			while(master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) pros::delay(3);
 
 			setNavigation(true);
 			setPage(0);
