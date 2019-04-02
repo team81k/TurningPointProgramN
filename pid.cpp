@@ -43,19 +43,13 @@ double pid::calculate(double value)
             }
     }
 
+    return power;
+}
+
+void pid::setTarget(double target)
+{
+    this->target = target;
     step = 0;
-
-    return power;
-}
-
-double pid::getPower()
-{
-    return power;
-}
-
-double pid::getError()
-{
-    return error;
 }
 
 void pid::setPowerPreSlew(double powerPreSlew)
@@ -68,6 +62,16 @@ void pid::setPower(double power)
 {
     this->power = power;
     step = 2;
+}
+
+double pid::getPower()
+{
+    return power;
+}
+
+double pid::getError()
+{
+    return error;
 }
 
 void pid::clear()

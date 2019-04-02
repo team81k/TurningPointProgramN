@@ -57,8 +57,8 @@ void opcontrol()
 		BL.move(BLP);
 
 		//Transform
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) differentialPID.target = DIFFERENTIAL_UP;
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) differentialPID.target = DIFFERENTIAL_DOWN;
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) differentialPID.setTarget(DIFFERENTIAL_UP);
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) differentialPID.setTarget(DIFFERENTIAL_DOWN);
 
 		//Flywheel / Intake
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) flywheelSpeed = 60;
@@ -75,8 +75,8 @@ void opcontrol()
 			launchStart = pros::millis();
 		}
 
-		flywheelPID1.target = flywheelSpeed * 6;
-		flywheelPID2.target = flywheelSpeed * 6;
+		flywheelPID1.setPower(flywheelSpeed * 6);
+		flywheelPID2.setPower(flywheelSpeed * 6);
 		double flywheelActualSpeed = flywheel.get_actual_velocity();
 		flywheelPower = flywheelPID1.calculate(flywheelActualSpeed);
 		if(fabs(flywheelPID1.getError()) < 0.2 * 600)

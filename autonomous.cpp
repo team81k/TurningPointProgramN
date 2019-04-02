@@ -61,7 +61,7 @@ void autonomousAsync(void * param)
 
 void driveTransform(double position, bool wait = true, long timeout = -1)
 {
-    differentialPID.target = position;
+    differentialPID.setTarget(position);
     autonPIDReady = false;
     long waitStart = pros::millis();
     if(wait) while((fabs(differentialPID.getError()) > 25 || !autonPIDReady) && (timeout == -1 || pros::millis() - waitStart < timeout)) pros::delay(3);
@@ -72,7 +72,7 @@ void driveStraight(double meters, bool wait = true, long timeout = -1)
     driveType = 1;
     FR.tare_position();BR.tare_position();FL.tare_position();BL.tare_position();
     forwardDrivePID.clear();
-    forwardDrivePID.target = getDriveStraightTicks(meters);
+    forwardDrivePID.setTarget(getDriveStraightTicks(meters));
     driveThreshold = getDriveStraightTicks(0.25_in);
     autonPIDReady = false;
     long waitStart = pros::millis();
@@ -84,7 +84,7 @@ void driveTurn(double radians, bool wait = true, long timeout = -1)
     driveType = 2;
     FR.tare_position();BR.tare_position();FL.tare_position();BL.tare_position();
     turnDrivePID.clear();
-    turnDrivePID.target = getDriveTurnTicks(radians);
+    turnDrivePID.setTarget(getDriveTurnTicks(radians));
     driveThreshold = getDriveTurnTicks(1_deg);
     autonPIDReady = false;
     long waitStart = pros::millis();
