@@ -46,21 +46,21 @@ double pid::calculate(double value)
     return power;
 }
 
-void pid::setTarget(double target)
+void pid::setTarget(double targetI)
 {
-    this->target = target;
+    target = targetI;
     step = 0;
 }
 
-void pid::setPowerPreSlew(double powerPreSlew)
+void pid::setPowerPreSlew(double powerPreSlewI)
 {
-    this->powerPreSlew = powerPreSlew;
+    powerPreSlew = powerPreSlewI;
     step = 1;
 }
 
-void pid::setPower(double power)
+void pid::setPower(double powerI)
 {
-    this->power = power;
+    power = powerI;
     step = 2;
 }
 
