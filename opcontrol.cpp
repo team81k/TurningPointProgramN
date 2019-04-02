@@ -75,13 +75,14 @@ void opcontrol()
 			launchStart = pros::millis();
 		}
 
-		flywheelPID1.setPower(flywheelSpeed * 6);
-		flywheelPID2.setPower(flywheelSpeed * 6);
+		flywheelPID1.setTarget(flywheelSpeed * 6);
+		flywheelPID2.setTarget(flywheelSpeed * 6);
 		double flywheelActualSpeed = flywheel.get_actual_velocity();
 		flywheelPower = flywheelPID1.calculate(flywheelActualSpeed);
-		if(fabs(flywheelPID1.getError()) < 0.2 * 600)
+		if(fabs(flywheelPID1.getError()) < 0.15 * 600.0)
 		{
 			flywheelPower = flywheelPID2.calculate(flywheelActualSpeed) + flywheelSpeed * 1.2;
+			//flywheelPower = flywheelSpeed * 1.2;
 			flywheelPID1.setPower(flywheelPower);
 		}
 
