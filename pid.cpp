@@ -74,6 +74,10 @@ double pid::getError()
 {
     return error;
 }
+double pid::getChange()
+{
+    return derivative;
+}
 
 void pid::clear()
 {

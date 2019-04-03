@@ -21,6 +21,7 @@ class pid
 
         double getPower();
         double getError();
+        double getChange();
 
         void clear();
 
