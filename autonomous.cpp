@@ -206,19 +206,26 @@ void autonomous()
 
     if(autonType == 1 && autonNear)
     {
-        if(autonRed) turnNegative = true;
+        if(!autonRed) turnNegative = true;
 
-        intakeSpin(80);
-        flywheelSpin(75, false);
-        driveStraight(15_in);
-        driveStraight(-15_in);
+        intakeSpin(60);
+        flywheelSpin(100, false);
+        driveStraight(50_in);
+        autonDelay(500);
+        driveStraight(-40_in);
         driveTurn(90_deg);
         waitOnFlywheel();
         launchBall();
-        driveStraight(10_in);
+        driveStraight(25_in);
         launchBall();
+        intakeSpin(0);
+        flywheelSpin(0, false);
+        driveTurn(20_deg);
+        driveStraight(20_in);
+        driveStraight(-20_in);
+        driveTurn(-20_deg);
+        driveStraight(-20_in);
         driveStop();
         intakeSpin(0);
-        flywheelSpin(0);
     }
 }
