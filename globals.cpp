@@ -9,6 +9,7 @@ pros::Motor FR(1), FL(2, true), BR(3), BL(4, true);
 pros::Motor flywheel(5, pros::E_MOTOR_GEARSET_06, true);
 pros::Motor intake(6);
 pros::Motor hood(7);
+pros::Motor lift(8);
 
 double DIFFERENTIAL_UP = 4095;
 double DIFFERENTIAL_DOWN = 10;
@@ -20,6 +21,10 @@ pros::ADIPotentiometer differentialPot('a');
 pros::ADIPotentiometer hoodPot('c');
 
 bool differentialStay = true;
+
+int liftStep = 0;
+long liftTimerStart = 0;
+int liftSetSpeed = 0;
 
 double flywheelSpeed = 0;
 double flywheelPower = 0;
@@ -48,6 +53,7 @@ pid differentialPID(0.15, 0, 0.012, -90, 90, 127 * 3);
 pid flywheelPID1(1.8, 0, 0, -127, 127, 127);
 pid flywheelPID2(0.15, 0, 0, -127, 127, 127);
 pid hoodPID(0.025, 0, 0, -127, 127, 0);
+pid liftPID(0.15, 0, 0, -127, 127, 0);
 
 pid forwardDrivePID(0.35, 0, 0.05, -100, 100, 127 * 3);
 pid turnDrivePID(0.45, 0.002, 0.02, -100, 100, 127 * 3);

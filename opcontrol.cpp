@@ -63,6 +63,55 @@ void opcontrol()
 			differentialPID.setTarget(DIFFERENTIAL_DOWN);
 		}
 
+		//Lift
+
+		if(liftStep == 0)
+		{
+			lift.move(-50);
+			liftTimerStart = pros::millis();
+			liftStep++;
+		}
+		else if(liftStep == 1)
+		{
+			if(pros::millis() - liftTimerStart > 2000 || (pros::millis() - liftTimerStart > 500 && fabs(lift.get_actual_velocity()) < 5))
+			{
+				lift.move(0);
+				liftTimerStart = pros::millis();
+				liftStep++;
+			}
+		}
+		else if(liftStep == 2)
+		{
+			if(pros::millis() - liftTimerStart > 500)
+			{
+				lift.tare_position();
+				liftStep++;
+			}
+		}
+		else if(liftStep == 3)
+		{
+			int pRYJoy = partner.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+
+			//if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) liftSetSpeed = 100;
+			//else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) liftSetSpeed = -100;
+			/*else */if(abs(pRYJoy) > 5) liftSetSpeed = pRYJoy;
+			else if(lift.get_position() < -350) liftSetSpeed = 8;
+			else liftSetSpeed = 0;
+
+			if(liftSetSpeed > 0 && lift.get_position() > -400 && liftSetSpeed > (lift.get_position() * -0.15))
+				liftSetSpeed = lift.get_position() * -0.15;
+
+			if(liftSetSpeed < 0 && lift.get_position() < -320 && liftSetSpeed < ((lift.get_position() + 720) * -0.2))
+				liftSetSpeed = (lift.get_position() - 800) * -0.15;
+
+			//lift.move(liftSetSpeed);
+			if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_X)) lift.move_absolute(0, 100);
+			if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_A)) lift.move_absolute(700, 100);
+			if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_B)) lift.move_absolute(800, 100);
+
+			//if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) liftStep = 0;
+		}
+
 		//Double Shot
 
 		//Flywheel / Intake

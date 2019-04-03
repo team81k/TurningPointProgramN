@@ -10,6 +10,7 @@ extern pros::Motor FR, FL, BR, BL;
 extern pros::Motor flywheel;
 extern pros::Motor intake;
 extern pros::Motor hood;
+extern pros::Motor lift;
 
 extern double DIFFERENTIAL_UP;
 extern double DIFFERENTIAL_DOWN;
@@ -21,6 +22,10 @@ extern pros::ADIPotentiometer differentialPot;
 extern pros::ADIPotentiometer hoodPot;
 
 extern bool differentialStay;
+
+extern int liftStep;
+extern long liftTimerStart;
+extern int liftSetSpeed;
 
 extern double flywheelSpeed;
 extern double flywheelPower;
@@ -42,6 +47,7 @@ extern pid differentialPID;
 extern pid flywheelPID1;
 extern pid flywheelPID2;
 extern pid hoodPID;
+extern pid liftPID;
 
 extern pid forwardDrivePID;
 extern pid turnDrivePID;
