@@ -120,9 +120,9 @@ void opcontrol()
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && !doubleShot) flywheelSpeed = 100;
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y) && !doubleShot) flywheelSpeed = 0;
 
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) && !doubleShot) hoodPID.setTarget(HOOD_UP);//intake.move(70);
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT) && !doubleShot) hoodPID.setTarget(HOOD_DOWN);//intake.move(0);
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT) && !doubleShot) ;//intake.move(-70);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) && !doubleShot) intake.move(50);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT) && !doubleShot) intake.move(0);
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT) && !doubleShot) intake.move(-70);
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN) && !doubleShot)
 		{
 			flywheelLaunchStart = pros::millis();
