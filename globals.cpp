@@ -56,7 +56,7 @@ pid hoodPID(0.03, 0, 0, -127, 127, 0);
 pid liftPID(0.15, 0, 0, -127, 127, 0);
 
 pid forwardDrivePID(0.35, 0, 0.05, -100, 100, 127 * 3);
-pid turnDrivePID(0.45, 0.002, 0.02, -100, 100, 127 * 3);
+pid turnDrivePID(1.5, 0, 0.5, -100, 100, 127);
 
 double robotX = 0; //in inches
 double robotY = 0;
