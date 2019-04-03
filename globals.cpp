@@ -14,8 +14,8 @@ pros::Motor lift(8);
 double DIFFERENTIAL_UP = 4095;
 double DIFFERENTIAL_DOWN = 10;
 
-double HOOD_UP = 600;
-double HOOD_DOWN = 4050;
+double HOOD_DOWN = 600;
+double HOOD_UP = 4050;
 
 pros::ADIPotentiometer differentialPot('a');
 pros::ADIPotentiometer hoodPot('c');

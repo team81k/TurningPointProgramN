@@ -151,6 +151,9 @@ void opcontrol()
 		if(flywheelLaunchStart != -1 && pros::millis() - flywheelLaunchStart > 50) flywheelLaunchStart = -1;
 
 		//Hood
+		if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) hoodPID.setTarget(HOOD_DOWN);
+		if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) hoodPID.setTarget(HOOD_UP);
+
 		hood.move(-hoodPID.calculate(hoodPot.get_value()));
 
 		//Display values
