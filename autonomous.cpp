@@ -108,10 +108,10 @@ void driveStraight(double meters, bool wait = true, long timeout = -1)
     FR.tare_position();BR.tare_position();FL.tare_position();BL.tare_position();
     forwardDrivePID.clear();
     forwardDrivePID.setTarget(getDriveStraightTicks(meters));
-    driveThreshold = getDriveStraightTicks(0.25_in);
+    driveThreshold = getDriveStraightTicks(0.5_in);
     autonomousRun();
     long waitStart = pros::millis();
-    if(wait) while(fabs(forwardDrivePID.getError()) > driveThreshold &&
+    if(wait) while((fabs(forwardDrivePID.getError()) > driveThreshold || forwardDrivePID.getChange() > 5) &&
         (timeout == -1 || pros::millis() - waitStart < timeout)) autonomousRun(3);
 }
 
@@ -121,11 +121,13 @@ void driveTurn(double radians, bool wait = true, long timeout = -1)
     driveType = 2;
     FR.tare_position();BR.tare_position();FL.tare_position();BL.tare_position();
     turnDrivePID.clear();
+    turnDrivePID.Kp = (1 / fabs(radians / PI)) * 2.5;
+    turnDrivePID.Kd = (1 / fabs(radians / PI)) * 0.8;
     turnDrivePID.setTarget(getDriveTurnTicks(radians));
     driveThreshold = getDriveTurnTicks(1_deg);
     autonomousRun();
     long waitStart = pros::millis();
-    if(wait) while(fabs(turnDrivePID.getError()) > driveThreshold &&
+    if(wait) while((fabs(turnDrivePID.getError()) > driveThreshold || turnDrivePID.getChange() > 5) &&
         (timeout == -1 || pros::millis() - waitStart < timeout)) autonomousRun(3);
 }
 
@@ -133,10 +135,10 @@ void waitOnDrive(long timeout = -1)
 {
     long waitStart = pros::millis();
     if(driveType == 1) while((fabs(forwardDrivePID.getError()) > driveThreshold ||
-        fabs(differentialPID.getError()) > 25) &&
+        forwardDrivePID.getChange() > 5 || fabs(differentialPID.getError()) > 25) &&
         (timeout == -1 || pros::millis() - waitStart < timeout)) autonomousRun(3);
     else if(driveType == 2) while((fabs(turnDrivePID.getError()) > driveThreshold ||
-        fabs(differentialPID.getError()) > 25) &&
+        turnDrivePID.getChange() > 5 || fabs(differentialPID.getError()) > 25) &&
         (timeout == -1 || pros::millis() - waitStart < timeout)) autonomousRun(3);
 }
 
