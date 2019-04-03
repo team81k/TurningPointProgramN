@@ -52,7 +52,7 @@ pid leftSide(0, 0, 0, -127, 127, 0);
 pid differentialPID(0.15, 0, 0.012, -90, 90, 127 * 3);
 pid flywheelPID1(1.8, 0, 0, -127, 127, 127);
 pid flywheelPID2(0.15, 0, 0, -127, 127, 127);
-pid hoodPID(0.025, 0, 0, -127, 127, 0);
+pid hoodPID(0.03, 0, 0, -127, 127, 0);
 pid liftPID(0.15, 0, 0, -127, 127, 0);
 
 pid forwardDrivePID(0.35, 0, 0.05, -100, 100, 127 * 3);
