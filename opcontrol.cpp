@@ -54,10 +54,10 @@ void opcontrol()
 		if(FLP < -127) { BLP -= FLP + 127; FLP = -127; }
 		if(BLP < -127) { FLP -= BLP + 127; BLP = -127; }
 
-		FR.move(FRP);
-		BR.move(BRP);
-		FL.move(FLP);
-		BL.move(BLP);
+		FR.move_velocity(FRP);
+		BR.move_velocity(BRP);
+		FL.move_velocity(FLP);
+		BL.move_velocity(BLP);
 
 		//Transform
 		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
