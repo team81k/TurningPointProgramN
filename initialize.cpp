@@ -77,13 +77,38 @@ lv_res_t btn_click_action(lv_obj_t * btn)
 		lv_label_set_text(autonSideDescription, generateSidesDescription().c_str());
 	}
 
+	if(btn == autonSkillsColor)
+	{
+		lv_obj_t * label = lv_obj_get_child(autonSkillsColor, NULL);
+		autonSkillsRed = true;
+		char * newTitle = (char*)"Red";
+		lv_color_t newColor = LV_COLOR_MAKE(200, 0, 0);
+		if(strcmp(lv_label_get_text(label), "Red") == 0)
+			{ newTitle = (char*)"Blue";newColor = LV_COLOR_MAKE(0, 0, 200); autonSkillsRed = false; }
+		lv_label_set_text(label, newTitle);
+		for(int i = 0; i < 4; i++)
+		{
+			lv_style_t * style = lv_btn_get_style(autonSkillsColor, (lv_btn_style_t)i);
+			if(i % 2 == 0) style->body.main_color = style->body.grad_color = newColor;
+			else style->body.main_color = style->body.grad_color = {
+				(uint8_t)std::fmin(newColor.blue + 50, 255),
+				(uint8_t)std::fmin(newColor.green + 50, 255),
+				(uint8_t)std::fmin(newColor.red + 50, 255)};
+		}
+	}
+
+	if(btn == autonSkillsColor)
+	{
+		lv_label_set_text(autonSkillsDescription, generateSkillsDescription().c_str());
+	}
+
 	if(btn == autonRunNormal) runAutonomous = 0;
 	if(btn == autonRunSkills) runAutonomous = 1;
 	if(btn == autonRunUnlimited) runAutonomous = 2;
 
 	if(autonType == 0) lv_label_set_text(autonRunDescription, "The robot will do nothing.");
 	if(autonType == 1) lv_label_set_text(autonRunDescription, generateSidesDescription().c_str());
-	if(autonType == 2) lv_label_set_text(autonRunDescription, "The robot will do skills.");
+	if(autonType == 2) lv_label_set_text(autonRunDescription, generateSkillsDescription().c_str());
 
 	return LV_RES_OK;
 }
@@ -180,6 +205,7 @@ void initialize()
 	flywheelPID1.negativeSlew = 127.0 / 5.0;
 	differentialPID.setTarget(DIFFERENTIAL_UP);
 	hoodPID.setTarget(HOOD_UP);
+	hood.set_brake_mode(MOTOR_BRAKE_BRAKE);
 
 	screenStyle.body.empty = false;
 	screenStyle.body.main_color = LV_COLOR_MAKE(50, 50, 50);
@@ -250,7 +276,10 @@ void initialize()
 
 	//skills page
 	autonSkillsPage = createPage(autonomousPage[0], LV_HOR_RES, LV_VER_RES - 100, 0, 100, false);
-	createLabel(autonSkillsPage, "The robot will do skills.", 10, 0, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES - 20);
+
+	autonSkillsColor = createButton(autonSkillsPage, "Red", {200, 0, 0}, 100, 40, 0, 0);
+
+	autonSkillsDescription = createLabel(autonSkillsPage, generateSkillsDescription().c_str(), 10, 50, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES - 20);
 
 	/*********************************************/
 	/*               Autonomous Run              */
