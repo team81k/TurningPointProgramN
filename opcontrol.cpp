@@ -3,6 +3,12 @@
 #include "pid.hpp"
 
 bool arcadeDrive = false;
+bool shift = false;
+
+long liftLastUp = -1;
+long liftLastDown = -1;
+bool liftGoUp = false;
+bool liftGoDown = false;
 
 void opcontrol()
 {
@@ -11,9 +17,11 @@ void opcontrol()
 
 	while(true)
 	{
+		shift = master.get_digital(pros::E_CONTROLLER_DIGITAL_Y);
+
 		//Drive
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) arcadeDrive = false;
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) arcadeDrive = true;
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) arcadeDrive = false;
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) arcadeDrive = true;
 
 		if(arcadeDrive)
 		{
@@ -52,12 +60,12 @@ void opcontrol()
 		BL.move(BLP);
 
 		//Transform
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
 		{
 			differentialStay = false;
 			differentialPID.setTarget(DIFFERENTIAL_UP);
 		}
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
 		{
 			differentialStay = false;
 			differentialPID.setTarget(DIFFERENTIAL_DOWN);
@@ -92,22 +100,42 @@ void opcontrol()
 		{
 			int pRYJoy = partner.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
 
-			//if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) liftSetSpeed = 100;
-			//else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) liftSetSpeed = -100;
-			/*else */if(abs(pRYJoy) > 5) liftSetSpeed = pRYJoy;
-			else if(lift.get_position() < -350) liftSetSpeed = 8;
+			/*if(!shift && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1))
+			{
+				if(liftLastUp == -1) liftLastUp = pros::millis();
+				else if(pros::millis() - liftLastUp < 1000 && !liftGoUp) liftGoUp = true;
+				else if(liftGoUp) {liftGoUp = false; liftLastUp = -1;}
+			}
+
+			if(!shift && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1))
+			{
+				if(liftLastDown == -1) liftLastDown = pros::millis();
+				else if(pros::millis() - liftLastDown < 1000 && !liftGoDown) liftGoDown = true;
+				else if(liftGoDown) {liftGoDown = false; liftLastDown = -1;}
+			}*/
+
+			if(abs(pRYJoy) > 5)
+			{
+				liftGoUp = liftGoDown = false;
+				liftLastUp = liftLastDown = -1;
+			}
+
+			if((!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) || liftGoUp) liftSetSpeed = -100;
+			else if((!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) || liftGoDown) liftSetSpeed = 100;
+			else if(abs(pRYJoy) > 5) liftSetSpeed = pRYJoy;
+			//else if(lift.get_position() < -350) liftSetSpeed = 8;
 			else liftSetSpeed = 0;
 
-			if(liftSetSpeed > 0 && lift.get_position() > -400 && liftSetSpeed > (lift.get_position() * -0.15))
+			if(liftSetSpeed >= 0 && lift.get_position() > 500)// && liftSetSpeed > ((800 - lift.get_position()) * 0.15))
+				liftSetSpeed = (800 - lift.get_position()) * 0.15;
+
+			if(liftSetSpeed <= 0 && lift.get_position() < 300)// && liftSetSpeed < (lift.get_position() * -0.15))
 				liftSetSpeed = lift.get_position() * -0.15;
 
-			if(liftSetSpeed < 0 && lift.get_position() < -320 && liftSetSpeed < ((lift.get_position() + 720) * -0.2))
-				liftSetSpeed = (lift.get_position() - 800) * -0.15;
-
-			//lift.move(liftSetSpeed);
-			if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_X)) lift.move_absolute(0, 100);
-			if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_A)) lift.move_absolute(700, 100);
-			if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_B)) lift.move_absolute(800, 100);
+			lift.move(liftSetSpeed);
+			//if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_X)) lift.move_absolute(0, 100);
+			//if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_A)) lift.move_absolute(700, 100);
+			//if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_B)) lift.move_absolute(800, 100);
 
 			//if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) liftStep = 0;
 		}
@@ -161,10 +189,9 @@ void opcontrol()
 		master.print(0, 0, "flywheelSpeed: %f", flywheelSpeed);
 
 		//Flywheel / Intake
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_X) && !doubleShot) flywheelSpeed = 60;
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && !doubleShot) flywheelSpeed = 80;
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && !doubleShot) flywheelSpeed = 85;
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && !doubleShot) flywheelSpeed = 100;
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y) && !doubleShot) flywheelSpeed = 0;
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_X) && !doubleShot) flywheelSpeed = 0;
 
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) && !doubleShot) intake.move(50);
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT) && !doubleShot) intake.move(0);
@@ -181,7 +208,6 @@ void opcontrol()
 		if(fabs(flywheelPID1.getError()) < 0.15 * 600.0)
 		{
 			flywheelPower = flywheelPID2.calculate(flywheelActualSpeed) + flywheelSpeed * 1.2;
-			//flywheelPower = flywheelSpeed * 1.2;
 			flywheelPID1.setPower(flywheelPower);
 		}
 
@@ -197,8 +223,8 @@ void opcontrol()
 		if(flywheelLaunchStart != -1 && pros::millis() - flywheelLaunchStart > 50) flywheelLaunchStart = -1;
 
 		//Hood
-		if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) hoodPID.setTarget(HOOD_DOWN);
-		if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) hoodPID.setTarget(HOOD_UP);
+		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) hoodPID.setTarget(HOOD_DOWN);
+		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) hoodPID.setTarget(HOOD_UP);
 
 		hood.move(-hoodPID.calculate(hoodPot.get_value()));
 
