@@ -63,6 +63,8 @@ extern bool autonRed;
 extern bool autonNear;
 extern bool autonPlatform;
 
+extern bool autonSkillsRed;
+
 extern int activePage;
 extern int runAutonomous;
 
@@ -78,7 +80,8 @@ extern lv_obj_t * autonTypePage, * autonNone, * autonSides, * autonSkills;
 extern lv_obj_t * autonNonePage;
 extern lv_obj_t * autonSidesPage, * autonSideColor, * autonSideDistance, * autonSidePlatform;
 extern lv_obj_t * autonSideDescription;
-extern lv_obj_t * autonSkillsPage;
+extern lv_obj_t * autonSkillsPage, * autonSkillsColor;
+extern lv_obj_t * autonSkillsDescription;
 
 extern lv_obj_t * * autonomousRunPage;
 extern lv_obj_t * autonRunTypePage, * autonRunNormal, * autonRunSkills, * autonRunUnlimited;
@@ -89,3 +92,4 @@ extern bool pageNavigation;
 void setNavigation(bool nav);
 void setPage(int page);
 std::string generateSidesDescription();
+std::string generateSkillsDescription();

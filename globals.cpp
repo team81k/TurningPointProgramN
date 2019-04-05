@@ -72,6 +72,8 @@ bool autonRed = true;
 bool autonNear = true;
 bool autonPlatform = true;
 
+bool autonSkillsRed = true;
+
 int activePage = 0;
 int runAutonomous = -1;
 
@@ -87,7 +89,8 @@ lv_obj_t * autonTypePage, * autonNone, * autonSides, * autonSkills;
 lv_obj_t * autonNonePage;
 lv_obj_t * autonSidesPage, * autonSideColor, * autonSideDistance, * autonSidePlatform;
 lv_obj_t * autonSideDescription;
-lv_obj_t * autonSkillsPage;
+lv_obj_t * autonSkillsPage, * autonSkillsColor;
+lv_obj_t * autonSkillsDescription;
 
 lv_obj_t * * autonomousRunPage;
 lv_obj_t * autonRunTypePage, * autonRunNormal, * autonRunSkills, * autonRunUnlimited;
@@ -124,5 +127,11 @@ std::string generateSidesDescription()
     if(autonPlatform) description += "Platform: Yes";
     else description += "Platform: No";
     description += ". And stuff. Bla Bla Bla.";
+    return description;
+}
+
+std::string generateSkillsDescription()
+{
+    std::string description = "The robot will ";
     return description;
 }

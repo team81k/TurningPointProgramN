@@ -275,6 +275,33 @@ void autonomous()
         driveStraight(-20_in);
         driveTurn(-20_deg);
         driveStraight(-20_in);
+
+    if(autonType == 2)
+    {
+        if(!autonSkillsRed) turnNegative = true;
+
+        intakeSpin(60);
+        hoodSet(HOOD_DOWN, false);
+        flywheelSpin(90, false);
+        driveStraight(45_in);
+        autonDelay(250);
+        driveStraight(-36_in);
+        driveTurn(90_deg);
+        driveStraight(8_in);
+        waitOnFlywheel();
+        launchBall();
+        hoodSet(HOOD_UP);
+        autonDelay(100);
+        launchBall();
+        driveStraight(30_in);
+        flipperSpeed(100);
+        autonDelay(500);
+        driveStraight(-62_in, false);
+        autonDelay(1000);
+        flipperSpeed(-100);
+        waitOnDrive();
+        driveTurn(-90_deg);
+        driveStraight(100_in, true, 3000);
         driveStop();
         intakeSpin(0);
     }
