@@ -72,6 +72,8 @@ void autonomousRun(int delayTime = 0)
 
     if(flywheelLaunchStart != -1 && pros::millis() - flywheelLaunchStart > 50) flywheelLaunchStart = -1;
 
+    //hood
+    hood.move(-hoodPID.calculate(hoodPot.get_value()));
     //Display values
 	/*sprintf(buffer,
 		"robot: (%f, %f)\n"
@@ -179,6 +181,15 @@ void autonDelay(int delayTime)
     while(pros::millis() - delayStart < delayTime) autonomousRun(3);
 }
 
+void hoodSet(double position, bool wait = true, long timeout = -1)
+{
+    hoodPID.setTarget(position);
+    autonomousRun();
+    long waitStart = pros::millis();
+    if(wait) while(fabs(hoodPID.getError()) < 300 &&
+        (timeout == -1 || pros::millis() - waitStart < timeout)) autonomousRun(3);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,6 +207,7 @@ void waitOnFlywheel(long timeout = -1);
 void intakeSpin(double speed);
 void launchBall(bool wait = true, long timeout = -1);
 void autonDelay(int delayTime);
+void hoodSet(double position, bool wait = true, long timeout = -1);
 */
 
 void autonomous()
