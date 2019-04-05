@@ -113,6 +113,52 @@ void opcontrol()
 		}
 
 		//Double Shot
+		if(!shift && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) doubleShot = 1;
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y) && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) doubleShot = 0;
+
+		if(doubleShot == 1)
+		{
+			hoodPID.setTarget(HOOD_DOWN);
+			doubleShot++;
+		}
+		else if(doubleShot == 2)
+		{
+			if(fabs(hoodPID.getError()) < 300) doubleShot++;
+		}
+		else if(doubleShot == 3)
+		{
+			flywheelLaunchStart = pros::millis();
+			doubleShot++;
+		}
+		else if(doubleShot == 4)
+		{
+			if(flywheelLaunchStart == -1)
+			{
+				doubleShotStart = pros::millis();
+				doubleShot++;
+			}
+		}
+		else if(doubleShot == 5)
+		{
+			if(pros::millis() - doubleShotStart > 0) doubleShot++;
+		}
+		else if(doubleShot == 6)
+		{
+			hoodPID.setTarget(HOOD_UP);
+			doubleShot++;
+		}
+		else if(doubleShot == 7)
+		{
+			if(fabs(hoodPID.getError()) < 300) doubleShot++;
+		}
+		else if(doubleShot == 8)
+		{
+			flywheelLaunchStart = pros::millis();
+			doubleShot = 0;
+		}
+
+		master.clear();
+		master.print(0, 0, "flywheelSpeed: %f", flywheelSpeed);
 
 		//Flywheel / Intake
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_X) && !doubleShot) flywheelSpeed = 60;

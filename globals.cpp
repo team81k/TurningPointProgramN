@@ -30,6 +30,7 @@ double flywheelSpeed = 0;
 double flywheelPower = 0;
 long flywheelLaunchStart = 0;
 int doubleShot = 0;
+long doubleShotStart = 0;
 long update = 0;
 
 double wheelWidth = (13.6_in + 10.5_in) / 2.0; //inches
