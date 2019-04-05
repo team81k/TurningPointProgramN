@@ -74,6 +74,39 @@ void autonomousRun(int delayTime = 0)
 
     //hood
     hood.move(-hoodPID.calculate(hoodPot.get_value()));
+
+    //lift
+    if(liftStep == 0)
+    {
+        lift.move(-50);
+        liftTimerStart = pros::millis();
+        liftStep++;
+    }
+    else if(liftStep == 1)
+    {
+        if(pros::millis() - liftTimerStart > 2000 || (pros::millis() - liftTimerStart > 500 && fabs(lift.get_actual_velocity()) < 5))
+        {
+            lift.move(0);
+            liftTimerStart = pros::millis();
+            liftStep++;
+        }
+    }
+    else if(liftStep == 2)
+    {
+        if(pros::millis() - liftTimerStart > 500)
+        {
+            lift.tare_position();
+            liftStep++;
+        }
+    }
+    else if(liftStep == 3)
+    {
+        if(liftSetSpeed >= 0 && lift.get_position() > 500) liftSetSpeed = (800 - lift.get_position()) * 0.15;
+        if(liftSetSpeed <= 0 && lift.get_position() < 300) liftSetSpeed = lift.get_position() * -0.15;
+
+        lift.move(liftSetSpeed);
+    }
+
     //Display values
 	/*sprintf(buffer,
 		"robot: (%f, %f)\n"
@@ -188,6 +221,11 @@ void hoodSet(double position, bool wait = true, long timeout = -1)
     long waitStart = pros::millis();
     if(wait) while(fabs(hoodPID.getError()) < 300 &&
         (timeout == -1 || pros::millis() - waitStart < timeout)) autonomousRun(3);
+}
+
+void flipperSpeed(double speed)
+{
+    liftSetSpeed = speed;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
