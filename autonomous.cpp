@@ -157,7 +157,7 @@ void driveTurn(double radians, bool wait = true, long timeout = -1)
     FR.tare_position();BR.tare_position();FL.tare_position();BL.tare_position();
     turnDrivePID.clear();
     turnDrivePID.Kp = (1 / fabs(radians / PI)) * 2.5;
-    turnDrivePID.Kd = (1 / fabs(radians / PI)) * 0.8;
+    turnDrivePID.Kd = (1 / fabs(radians / PI)) * 0.85;
     turnDrivePID.setTarget(getDriveTurnTicks(radians));
     driveThreshold = getDriveTurnTicks(1_deg);
     autonomousRun();
@@ -246,6 +246,7 @@ void intakeSpin(double speed);
 void launchBall(bool wait = true, long timeout = -1);
 void autonDelay(int delayTime);
 void hoodSet(double position, bool wait = true, long timeout = -1);
+void flipperSpeed(double speed, bool wait = true, long timeout = -1);
 */
 
 void autonomous()
@@ -259,22 +260,38 @@ void autonomous()
         if(!autonRed) turnNegative = true;
 
         intakeSpin(60);
-        flywheelSpin(100, false);
-        driveStraight(50_in);
-        autonDelay(500);
-        driveStraight(-40_in);
+        hoodSet(HOOD_DOWN, false);
+        flywheelSpin(90, false);
+        driveStraight(45_in);
+        autonDelay(250);
+        driveStraight(-36_in);
         driveTurn(90_deg);
+        driveStraight(4_in);
         waitOnFlywheel();
         launchBall();
-        driveStraight(25_in);
+        hoodSet(HOOD_UP);
+        autonDelay(100);
         launchBall();
+        driveStraight(34_in);
+        flipperSpeed(100);
+        autonDelay(500);
+        if(autonPlatform)
+        {
+            driveStraight(-56_in, false);
+            autonDelay(1000);
+            flipperSpeed(-100);
+            waitOnDrive();
+            driveTurn(-90_deg);
+            driveStraight(40_in, true, 2500);
+        }
+        else
+        {
+            driveStraight(-30_in);
+            flipperSpeed(-100);
+        }
+        driveStop();
         intakeSpin(0);
-        flywheelSpin(0, false);
-        driveTurn(20_deg);
-        driveStraight(20_in);
-        driveStraight(-20_in);
-        driveTurn(-20_deg);
-        driveStraight(-20_in);
+    }
 
     if(autonType == 2)
     {
@@ -305,4 +322,6 @@ void autonomous()
         driveStop();
         intakeSpin(0);
     }
+
+    autonDelay(99999999);
 }
