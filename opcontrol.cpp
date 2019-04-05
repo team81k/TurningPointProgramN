@@ -10,6 +10,8 @@ void opcontrol()
 	setNavigation(true);
 	setPage(0);
 
+	master.print(0, 0, "fw speed: %f4", flywheelSpeed);
+
 	while(true)
 	{
 		shift = master.get_digital(pros::E_CONTROLLER_DIGITAL_Y);
@@ -152,13 +154,22 @@ void opcontrol()
 			doubleShot = 0;
 		}
 
-		master.clear();
-		master.print(0, 0, "flywheelSpeed: %f", flywheelSpeed);
-
 		//Flywheel / Intake
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && !doubleShot) flywheelSpeed = 85;
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && !doubleShot) flywheelSpeed = 100;
+		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && !doubleShot) flywheelSpeed = 85;
+		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && !doubleShot) flywheelSpeed = 100;
 		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_X) && !doubleShot) flywheelSpeed = 0;
+
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && !doubleShot) flywheelSpeed += 5;
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && !doubleShot) flywheelSpeed -= 5;
+
+		if(flywheelSpeed > 100) flywheelSpeed = 100;
+		if(flywheelSpeed < 0) flywheelSpeed = 0;
+
+		if(preFlywheelSpeed != flywheelSpeed)
+		{
+			master.print(0, 0, "fw speed: %f4", flywheelSpeed);
+			preFlywheelSpeed = flywheelSpeed;
+		}
 
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) && !doubleShot) intake.move(50);
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT) && !doubleShot) intake.move(0);

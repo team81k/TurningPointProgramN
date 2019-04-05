@@ -28,6 +28,7 @@ extern long liftTimerStart;
 extern int liftSetSpeed;
 
 extern double flywheelSpeed;
+extern double preFlywheelSpeed;
 extern double flywheelPower;
 extern long flywheelLaunchStart;
 extern int doubleShot;

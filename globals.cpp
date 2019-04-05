@@ -27,6 +27,7 @@ long liftTimerStart = 0;
 int liftSetSpeed = 0;
 
 double flywheelSpeed = 0;
+double preFlywheelSpeed = 0;
 double flywheelPower = 0;
 long flywheelLaunchStart = 0;
 int doubleShot = 0;
