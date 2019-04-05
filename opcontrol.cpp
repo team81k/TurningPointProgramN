@@ -232,10 +232,12 @@ void opcontrol()
 		sprintf(buffer,
 			"robot: (%f, %f)\n"
 			"angle: %fdeg\n"
-			"hood: %i",
+			"hood: %i\n"
+			"flipper: %f",
 			robotX, robotY,
 			robotDir * 180.0 / PI,
-			hoodPot.get_value());
+			hoodPot.get_value(),
+			lift.get_position());
 		lv_label_set_text(homeTextObject, buffer);
 
 		if(pros::millis() - update > 50)
