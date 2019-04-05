@@ -55,12 +55,12 @@ void opcontrol()
 		BL.move_velocity(BLP);
 
 		//Transform
-		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
+		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
 		{
 			differentialStay = false;
 			differentialPID.setTarget(DIFFERENTIAL_UP);
 		}
-		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
+		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
 		{
 			differentialStay = false;
 			differentialPID.setTarget(DIFFERENTIAL_DOWN);
@@ -190,8 +190,8 @@ void opcontrol()
 		if(flywheelLaunchStart != -1 && pros::millis() - flywheelLaunchStart > 50) flywheelLaunchStart = -1;
 
 		//Hood
-		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) hoodPID.setTarget(HOOD_DOWN);
-		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) hoodPID.setTarget(HOOD_UP);
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) hoodPID.setTarget(HOOD_TOP_FLAG);
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) hoodPID.setTarget(HOOD_LOW_FLAG);
 
 		hood.move(-hoodPID.calculate(hoodPot.get_value()));
 
