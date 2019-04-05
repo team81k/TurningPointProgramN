@@ -260,7 +260,7 @@ void autonomous()
         if(!autonRed) turnNegative = true;
 
         intakeSpin(60);
-        hoodSet(HOOD_DOWN, false);
+        hoodSet(HOOD_TOP_FLAG, false);
         flywheelSpin(90, false);
         driveStraight(45_in);
         autonDelay(250);
@@ -269,7 +269,7 @@ void autonomous()
         driveStraight(4_in);
         waitOnFlywheel();
         launchBall();
-        hoodSet(HOOD_UP);
+        hoodSet(HOOD_LOW_FLAG);
         autonDelay(100);
         launchBall();
         driveStraight(34_in);
@@ -298,7 +298,7 @@ void autonomous()
         if(!autonSkillsRed) turnNegative = true;
 
         intakeSpin(60);
-        hoodSet(HOOD_DOWN, false);
+        hoodSet(HOOD_TOP_FLAG, false);
         flywheelSpin(90, false);
         driveStraight(45_in);
         autonDelay(250);
@@ -307,7 +307,7 @@ void autonomous()
         driveStraight(8_in);
         waitOnFlywheel();
         launchBall();
-        hoodSet(HOOD_UP);
+        hoodSet(HOOD_LOW_FLAG);
         autonDelay(100);
         launchBall();
         driveStraight(30_in);

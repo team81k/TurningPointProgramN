@@ -146,7 +146,7 @@ void opcontrol()
 
 		if(doubleShot == 1)
 		{
-			hoodPID.setTarget(HOOD_DOWN);
+			hoodPID.setTarget(HOOD_TOP_FLAG);
 			doubleShot++;
 		}
 		else if(doubleShot == 2)
@@ -172,7 +172,7 @@ void opcontrol()
 		}
 		else if(doubleShot == 6)
 		{
-			hoodPID.setTarget(HOOD_UP);
+			hoodPID.setTarget(HOOD_LOW_FLAG);
 			doubleShot++;
 		}
 		else if(doubleShot == 7)

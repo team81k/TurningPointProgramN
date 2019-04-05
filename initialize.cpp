@@ -204,7 +204,7 @@ void initialize()
 	flywheel.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	flywheelPID1.negativeSlew = 127.0 / 5.0;
 	differentialPID.setTarget(DIFFERENTIAL_UP);
-	hoodPID.setTarget(HOOD_UP);
+	hoodPID.setTarget(HOOD_TOP_FLAG);
 	hood.set_brake_mode(MOTOR_BRAKE_BRAKE);
 
 	screenStyle.body.empty = false;

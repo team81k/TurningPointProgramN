@@ -15,8 +15,8 @@ extern pros::Motor lift;
 extern double DIFFERENTIAL_UP;
 extern double DIFFERENTIAL_DOWN;
 
-extern double HOOD_DOWN;
-extern double HOOD_UP;
+extern double HOOD_TOP_FLAG;
+extern double HOOD_LOW_FLAG;
 
 extern pros::ADIPotentiometer differentialPot;
 extern pros::ADIPotentiometer hoodPot;
