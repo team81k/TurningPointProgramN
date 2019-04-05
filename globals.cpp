@@ -14,7 +14,7 @@ pros::Motor lift(8);
 double DIFFERENTIAL_UP = 4095;
 double DIFFERENTIAL_DOWN = 10;
 
-double HOOD_DOWN = 600;
+double HOOD_DOWN = 100;
 double HOOD_UP = 4050;
 
 pros::ADIPotentiometer differentialPot('a');
@@ -52,7 +52,7 @@ pid leftSide(0, 0, 0, -127, 127, 0);
 pid differentialPID(0.15, 0, 0.012, -90, 90, 127 * 3);
 pid flywheelPID1(1.8, 0, 0, -127, 127, 127);
 pid flywheelPID2(0.15, 0, 0, -127, 127, 127);
-pid hoodPID(0.03, 0, 0, -127, 127, 0);
+pid hoodPID(0.03, 0, 0.0005, -127, 127, 0);
 pid liftPID(0.15, 0, 0, -127, 127, 0);
 
 pid forwardDrivePID(0.35, 0, 0.05, -100, 100, 127 * 3);
