@@ -45,10 +45,10 @@ void autonomousRun(int delayTime = 0)
     if(FLP < -127) { BLP -= FLP + 127; FLP = -127; }
     if(BLP < -127) { FLP -= BLP + 127; BLP = -127; }
 
-    FR.move_velocity(FRP);
-    BR.move_velocity(BRP);
-    FL.move_velocity(FLP);
-    BL.move_velocity(BLP);
+    FR.move(FRP);
+    BR.move(BRP);
+    FL.move(FLP);
+    BL.move(BLP);
 
     //flywheel
     flywheelPID1.setTarget(flywheelSpeed * 6);
@@ -156,10 +156,10 @@ void driveTurn(double radians, bool wait = true, long timeout = -1)
     driveType = 2;
     FR.tare_position();BR.tare_position();FL.tare_position();BL.tare_position();
     turnDrivePID.clear();
-    turnDrivePID.Kp = (1 / fabs(radians / PI)) * 2.5;
-    turnDrivePID.Kd = (1 / fabs(radians / PI)) * 0.85;
+    turnDrivePID.Kp = (1 / (fabs(radians) / PI)) * 4.0;//4.0
+    turnDrivePID.Kd = (1 / (fabs(radians) / PI)) * 1.5;//1.2
     turnDrivePID.setTarget(getDriveTurnTicks(radians));
-    driveThreshold = getDriveTurnTicks(1_deg);
+    driveThreshold = getDriveTurnTicks(1.5_deg);
     autonomousRun();
     long waitStart = pros::millis();
     if(wait) while((fabs(turnDrivePID.getError()) > driveThreshold || turnDrivePID.getChange() > 5) &&
@@ -264,20 +264,22 @@ void autonomous()
         flywheelSpin(90, false);
         driveStraight(45_in);
         autonDelay(250);
-        driveStraight(-36_in);
+        driveStraight(-39_in);
         driveTurn(90_deg);
-        driveStraight(4_in);
+        driveStraight(12_in);
+        driveTurn(-14_deg);
         waitOnFlywheel();
         launchBall();
         hoodSet(HOOD_LOW_FLAG);
-        autonDelay(100);
+        autonDelay(250);
         launchBall();
-        driveStraight(34_in);
+        driveTurn(20_deg);
+        driveStraight(26_in, true, 2000);
         flipperSpeed(100);
-        autonDelay(500);
+        autonDelay(150);
         if(autonPlatform)
         {
-            driveStraight(-56_in, false);
+            driveStraight(-62_in, false);
             autonDelay(1000);
             flipperSpeed(-100);
             waitOnDrive();
@@ -286,11 +288,58 @@ void autonomous()
         }
         else
         {
-            driveStraight(-30_in);
+            flywheelSpin(95, false);
+            driveStraight(-38_in);
+            //flipperSpeed(-100);
+            if(!autonRed) driveTurn(-50_deg);
+            else driveTurn(-45_deg);
+            driveStraight(15_in);
             flipperSpeed(-100);
+            autonDelay(800);
+            driveStraight(-15_in, false);
+            autonDelay(500);
+            launchBall();
+            waitOnDrive();
+            /*flipperSpeed(-50);
+            waitOnDrive();
+            driveStraight(15_in, false);
+            launchBall();
+            hoodSet(HOOD_LOW_FLAG);
+            autonDelay(250);
+            flipperSpeed(100);
+            launchBall();
+            flipperSpeed(-50);*/
         }
         driveStop();
         intakeSpin(0);
+    }
+
+    if(autonType == 1 && !autonNear)
+    {
+        if(!autonRed) turnNegative = true;
+
+        intakeSpin(60);
+        hoodSet(HOOD_TOP_FLAG, false);
+        flywheelSpin(90, false);
+        driveStraight(45_in);
+        autonDelay(500);
+        driveStraight(-8_in);
+        driveTurn(80_deg);
+        waitOnFlywheel();
+        launchBall();
+        hoodSet(HOOD_LOW_FLAG);
+        autonDelay(500);
+        launchBall();
+        autonDelay(500);
+        if(autonPlatform)
+        {
+            driveTransform(DIFFERENTIAL_DOWN);
+            driveStraight(50_in, true, 3000);
+        }
+        else
+        {
+            driveStraight(-10_in);
+        }
     }
 
     if(autonType == 2)

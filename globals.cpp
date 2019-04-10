@@ -57,8 +57,8 @@ pid flywheelPID2(0.15, 0, 0, -127, 127, 127);
 pid hoodPID(0.03, 0, 0.0005, -127, 127, 0);
 pid liftPID(0.15, 0, 0, -127, 127, 0);
 
-pid forwardDrivePID(0.35, 0, 0.05, -100, 100, 127 * 3);
-pid turnDrivePID(1.5, 0, 0.5, -100, 100, 127);
+pid forwardDrivePID(0.35, 0, 0.05, -127, 127, 127 * 3);
+pid turnDrivePID(1.5, 0, 0.5, -127, 127, 127 * 3);
 
 double robotX = 0; //in inches
 double robotY = 0;
@@ -121,18 +121,23 @@ void setPage(int page)
 std::string generateSidesDescription()
 {
     std::string description = "The robot will ";
-	if(autonRed) description += "Red, ";
-    else description += "Blue, ";
-    if(autonNear) description += "Near, ";
-    else description += "Far, ";
-    if(autonPlatform) description += "Platform: Yes";
-    else description += "Platform: No";
-    description += ". And stuff. Bla Bla Bla.";
+	if(autonRed) description += "start on #ff0000 red#, ";
+    else description += "start on #0000ff blue#, ";
+    if(autonNear) description += "near tile. ";
+    else description += "far tile. ";
+    description += "It will get another rball and flip all three ";
+    if(autonNear) description += "flags. ";
+    else description += "center flags. ";
+    if(autonPlatform) description += "Then it will drive onto the low platform.";
+    else description += "";
     return description;
 }
 
 std::string generateSkillsDescription()
 {
     std::string description = "The robot will ";
+    if(autonSkillsRed) description += "start on #ff0000 red#, ";
+    else description += "start on #0000ff blue#, ";
+    description += "near tile. It will get another ball and flip all three flags. Then it will drive onto the high platform.";
     return description;
 }

@@ -22,10 +22,12 @@ void opcontrol()
 
 		if(arcadeDrive)
 		{
-			rightSide.setPowerPreSlew(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)
-				- master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
-			leftSide.setPowerPreSlew(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)
-				+ master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
+			double rYJoy = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+
+			if(shift) rYJoy *= 0.5;
+
+			rightSide.setPowerPreSlew(rYJoy - master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
+			leftSide.setPowerPreSlew(rYJoy + master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
 		}
 		else
 		{
@@ -51,18 +53,18 @@ void opcontrol()
 		if(FLP < -127) { BLP -= FLP + 127; FLP = -127; }
 		if(BLP < -127) { FLP -= BLP + 127; BLP = -127; }
 
-		FR.move_velocity(FRP);
-		BR.move_velocity(BRP);
-		FL.move_velocity(FLP);
-		BL.move_velocity(BLP);
+		FR.move/*_velocity*/(FRP * (200.0 / 127.0));
+		BR.move/*_velocity*/(BRP * (200.0 / 127.0));
+		FL.move/*_velocity*/(FLP * (200.0 / 127.0));
+		BL.move/*_velocity*/(BLP * (200.0 / 127.0));
 
 		//Transform
-		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
 		{
 			differentialStay = false;
 			differentialPID.setTarget(DIFFERENTIAL_UP);
 		}
-		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
+		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
 		{
 			differentialStay = false;
 			differentialPID.setTarget(DIFFERENTIAL_DOWN);
@@ -96,8 +98,8 @@ void opcontrol()
 		{
 			int pRYJoy = partner.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
 
-			if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) liftSetSpeed = -100;
-			else if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) liftSetSpeed = 100;
+			if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) liftSetSpeed = -100;
+			else if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) liftSetSpeed = 100;
 			else if(abs(pRYJoy) > 5) liftSetSpeed = pRYJoy;
 			else liftSetSpeed = 0;
 
@@ -159,8 +161,8 @@ void opcontrol()
 		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && !doubleShot) flywheelSpeed = 100;
 		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_X) && !doubleShot) flywheelSpeed = 0;
 
-		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && !doubleShot) flywheelSpeed += 5;
-		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && !doubleShot) flywheelSpeed -= 5;
+		if(shift && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A) && !doubleShot) flywheelSpeed += 5;
+		if(shift && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B) && !doubleShot) flywheelSpeed -= 5;
 
 		if(flywheelSpeed > 100) flywheelSpeed = 100;
 		if(flywheelSpeed < 0) flywheelSpeed = 0;
@@ -201,8 +203,8 @@ void opcontrol()
 		if(flywheelLaunchStart != -1 && pros::millis() - flywheelLaunchStart > 50) flywheelLaunchStart = -1;
 
 		//Hood
-		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) hoodPID.setTarget(HOOD_TOP_FLAG);
-		if(shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) hoodPID.setTarget(HOOD_LOW_FLAG);
+		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) hoodPID.setTarget(HOOD_TOP_FLAG);
+		if(!shift && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) hoodPID.setTarget(HOOD_LOW_FLAG);
 
 		hood.move(-hoodPID.calculate(hoodPot.get_value()));
 
